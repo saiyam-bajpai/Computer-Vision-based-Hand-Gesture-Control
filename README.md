@@ -71,9 +71,24 @@ This project goes beyond simple image detection. Here is the logic I implemented
 To run this on your system, you need Python installed. Run the following command to install all the "organs" of the project:
 
 ```bash
-python -m pip install opencv-python mediapipe numpy pycaw screen-brightness-control pyautogui
+python -m pip install opencv-python 
 ```
-
+```bash
+python -m pip install mediapipe 
+```
+```bash
+python -m pip install numpy 
+```
+```bash
+python -m pip install pycaw
+```
+```bash
+python -m pip install screen-brightness-control
+```
+```bash
+python -m pip install pyautogui
+```
+  
 ### To Run:
 1. Save the final code as `main.py`.
 2. Execute via terminal: `python main.py`.
