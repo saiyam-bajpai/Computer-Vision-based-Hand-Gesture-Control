@@ -11,6 +11,31 @@ As a first-year student, I wanted to build something that felt like it belonged 
 In this version (**v4.0**), I solved that problem by implementing **Mode Switching Logic**. The system now understands the "context" of your hand, making the controls precise, smooth, and actually usable in daily life.
 
 ---
+🚀 The Development Journey (Roadmap)
+I built this project in four distinct stages, learning something new at every step. Here is how GestureFlow evolved:
+**📍 Version 1.0: The Foundation**
+What I built: A basic script that opened the webcam and tracked the distance between the thumb and index finger.
+Features: Only Volume Control.
+Learning Milestone: I learned how to use OpenCV for video frames and the Pycaw library to talk to the Windows Audio Engine.
+The Problem: The volume would change every time I moved my hand, even if I wasn't trying to adjust it. It was too sensitive.
+**📍 Version 2.0: The Visual UI**
+What I built: Added screen brightness and a visual interface.
+Features: Added Brightness Control and the Volume Bar/Percentage display on the screen.
+Learning Milestone: I learned how to draw on a live video feed using cv2.rectangle and cv2.putText, and how to use NumPy to map pixel distances to percentages.
+The Problem: I could control volume and brightness, but the computer couldn't tell my left hand from my right hand. It was confusing!
+**📍 Version 3.0: Adding "Intelligence"**
+What I built: Introduced Hand Identification (Handedness) and the first Media Keys.
+Features: Left hand for Volume, Right hand for Brightness. Added Minimize (Thumb Down) and Forward/Backward gestures.
+Learning Milestone: I integrated PyAutoGUI for keyboard automation. I also discovered the "AttributeError" bug when naming files mediapipe.py!
+The Problem (The "Messy" Gesture): Every time I tried to use the "Peace Sign" to skip a video, the volume would also jump. The gestures were overlapping.
+**📍 Version 4.0: The Final Intuitive Build (Current)**
+What I built: A "Strict Mode" system with hand-specific navigation.
+Features:
+Mode Switch: I used the Middle Finger as a lock. Level adjustments ONLY work if the middle finger is up.
+Hand Separation: Backward is now exclusively on the Left Hand, and Forward is on the Right Hand.
+Fist to Mute: Added a safety mute feature when the hand is closed.
+Learning Milestone: I learned State Management and Conditional Logic. By separating the logic into "Level Mode" and "Navigation Mode," I achieved 100% accuracy with zero overlap.
+Result: A polished, user-friendly tool that feels like a real product.
 
 ## ✨ Advanced Features
 *   **🎯 Mode-Aware Adjustment:**
