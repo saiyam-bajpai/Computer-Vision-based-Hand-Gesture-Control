@@ -1,24 +1,818 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" style="scroll-behavior: smooth;">
+
 <head>
-    <title>GestureFlow AI</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GestureFlow v5.0 | Web-AI Interface</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body { background: #121212; color: white; font-family: sans-serif; text-align: center; }
-        .stream { border: 5px solid #007bff; border-radius: 15px; margin-top: 20px; box-shadow: 0 0 20px #007bff; }
-        .guide { display: flex; justify-content: center; gap: 30px; margin-top: 20px; }
-        .box { background: #1e1e1e; padding: 15px; border-radius: 10px; border-bottom: 3px solid #007bff; width: 250px; }
-        h1 { color: #007bff; }
+        :root {
+            --bg-dark: #050816;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --primary: #00f0ff;
+            /* Cyan */
+            --secondary: #7b2cbf;
+            /* Purple */
+            --accent: #ff006e;
+            /* Magenta */
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --border: rgba(255, 255, 255, 0.1);
+            --font-display: 'Chakra Petch', sans-serif;
+            --font-body: 'Exo 2', sans-serif;
+            --glass: blur(12px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            min-height: 100vh;
+            /* Motion Gradient Background */
+            background: linear-gradient(-45deg,
+                    #050816,
+                    #0a0e27,
+                    #1a0b2e,
+                    #050816);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* --- Animations --- */
+        @keyframes glowPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+                border-color: rgba(0, 240, 255, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
+                border-color: rgba(0, 240, 255, 0.6);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .reveal-1 {
+            animation-delay: 0.1s;
+        }
+
+        .reveal-2 {
+            animation-delay: 0.2s;
+        }
+
+        .reveal-3 {
+            animation-delay: 0.3s;
+        }
+
+        .reveal-4 {
+            animation-delay: 0.4s;
+        }
+
+        /* --- Layout & Glassmorphism --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: var(--glass);
+            -webkit-backdrop-filter: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* --- Header --- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+            background: rgba(5, 8, 22, 0.85);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            text-transform: uppercase;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 10px var(--primary));
+        }
+
+        .version-badge {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            margin-left: 10px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #00ff66;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff66;
+            animation: pulseDot 2s infinite;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, var(--text-main), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        /* --- Main Content Split --- */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* --- Video Feed --- */
+        .video-container {
+            position: relative;
+            padding: 10px;
+            overflow: hidden;
+            border: 1px solid var(--primary);
+            animation: glowPulse 4s infinite;
+        }
+
+        .video-feed {
+            width: 100%;
+            display: block;
+            border-radius: 8px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 20px;
+            left: 25px;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-badge {
+            background: #ff0000;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+            opacity: 0.5;
+            animation: scanline 3s linear infinite;
+            z-index: 15;
+            pointer-events: none;
+        }
+
+        /* --- Controls & Cheatsheet --- */
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .panel-header {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gesture-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gesture-card:hover {
+            transform: translateX(5px);
+            background: rgba(0, 240, 255, 0.05);
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+
+        .gesture-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gesture-card:hover::before {
+            opacity: 1;
+        }
+
+        .gesture-icon {
+            font-size: 1.8rem;
+            width: 40px;
+            text-align: center;
+        }
+
+        .gesture-info h4 {
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .gesture-info p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* --- Status Indicators --- */
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-box {
+            background: rgba(123, 44, 191, 0.1);
+            border: 1px solid rgba(123, 44, 191, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .status-box h5 {
+            color: var(--secondary);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .status-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* --- System Controls --- */
+        .system-controls {
+            margin-top: auto;
+            text-align: center;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-shutdown {
+            background: rgba(255, 0, 110, 0.1);
+            color: #ff006e;
+            border: 1px solid #ff006e;
+            padding: 12px 24px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            border-radius: 4px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-shutdown:hover {
+            background: #ff006e;
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 0, 110, 0.6);
+        }
+
+        /* --- Features Section --- */
+        .features-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 4rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .feat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover .feat-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .feature-card h3 {
+            font-family: var(--font-display);
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* --- Footer --- */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .tech-badges span {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 5px;
+            color: var(--text-muted);
+        }
+
+        .creator-text {
+            margin-bottom: 1rem;
+            font-family: var(--font-display);
+            color: var(--primary);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .footer-glow {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 1px;
+            background: radial-gradient(circle, var(--primary) 0%, transparent 100%);
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        /* --- Shutdown Overlay --- */
+        .shutdown-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: black;
+            color: var(--primary);
+            font-family: var(--font-display);
+            font-size: 2rem;
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <h1>🖐️ GestureFlow Web Dashboard</h1>
-    <div class="stream-container">
-        <img class="stream" src="{{ url_for('video_feed') }}" width="800">
+
+    <header class="glass-panel reveal reveal-1">
+        <div class="container"
+            style="display:flex; justify-content:space-between; align-items:center; width:100%; padding:0;">
+            <div class="logo">
+                <span class="logo-icon">✋</span>
+                <div>
+                    GESTUREFLOW <span style="color:var(--primary)">v5.0</span>
+                    <span class="version-badge"
+                        style="margin-left: 5px; font-size: 0.7rem; border: none; background: transparent; color: var(--text-muted); padding: 0;">by
+                        Saiyam Bajpai</span>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <!-- Social Links -->
+                <div
+                    style="display: flex; gap: 15px; margin-right: 15px; border-right: 1px solid var(--border); padding-right: 20px;">
+                    <a href="https://github.com/saiyam-bajpai/Computer-Vision-based-Hand-Gesture-Control"
+                        target="_blank" style="color: var(--text-main); font-size: 1.2rem; transition: color 0.3s;"
+                        onmouseover="this.style.color='var(--primary)'"
+                        onmouseout="this.style.color='var(--text-main)'">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/saiyam-bajpai/" target="_blank"
+                        style="color: var(--text-main); font-size: 1.2rem; transition: color 0.3s;"
+                        onmouseover="this.style.color='#0077b5'" onmouseout="this.style.color='var(--text-main)'">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 0.9rem; color: var(--text-muted); letter-spacing: 1px;">SYSTEM STATUS</span>
+                    <span class="status-dot"></span>
+                    <span style="font-weight: 700; color: #00ff66;">ONLINE</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="hero reveal reveal-2">
+            <h1>WEB-AI INTERFACE</h1>
+            <p>ADVANCED GESTURE CONTROL SYSTEM</p>
+        </div>
+
+        <div class="main-grid">
+            <!-- Left: Video Feed -->
+            <div class="video-section reveal reveal-3">
+                <div class="glass-panel video-container">
+                    <div class="video-overlay">
+                        <span class="live-badge">LIVE FEED</span>
+                        <span style="font-family:var(--font-display); font-size:0.8rem;">1080p // 60FPS</span>
+                    </div>
+                    <div class="scanner-line"></div>
+                    <!-- The main video feed from Flask -->
+                    <img src="/video_feed" alt="GestureFlow Video Feed" class="video-feed">
+                </div>
+            </div>
+
+            <!-- Right: Controls & Context -->
+            <div class="side-panel reveal reveal-4">
+
+                <!-- Status Indicators -->
+                <div class="status-grid glass-panel"
+                    style="background:transparent; border:none; box-shadow:none; padding:0;">
+                    <div class="status-box">
+                        <h5>Active Mode</h5>
+                        <div class="status-value" style="color:var(--primary)">NAVIGATION</div>
+                    </div>
+                    <div class="status-box">
+                        <h5>Hand Detect</h5>
+                        <div class="status-value" style="color:var(--secondary)">SCANNING...</div>
+                    </div>
+                </div>
+
+                <!-- Cheatsheet -->
+                <div class="glass-panel" style="padding: 1.5rem;">
+                    <div class="panel-header">
+                        COMMAND CENTER
+                        <span style="font-size:0.7rem; opacity:0.7">GESTURE LIBRARY</span>
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <div class="gesture-card">
+                            <div class="gesture-icon">🖕</div>
+                            <div class="gesture-info">
+                                <h4>Mode Toggle</h4>
+                                <p>Middle Finger Up</p>
+                            </div>
+                        </div>
+
+                        <div class="gesture-card">
+                            <div class="gesture-icon">🔊</div>
+                            <div class="gesture-info">
+                                <h4>Volume Control</h4>
+                                <p>Left Hand: Pinch + Middle UP</p>
+                            </div>
+                        </div>
+
+                        <div class="gesture-card">
+                            <div class="gesture-icon">🔆</div>
+                            <div class="gesture-info">
+                                <h4>Brightness</h4>
+                                <p>Right Hand: Pinch + Middle UP</p>
+                            </div>
+                        </div>
+
+                        <div class="gesture-card">
+                            <div class="gesture-icon">⏩</div>
+                            <div class="gesture-info">
+                                <h4>Media Nav</h4>
+                                <p>Index UP (R/L) + Middle DOWN</p>
+                            </div>
+                        </div>
+
+                        <div class="gesture-card">
+                            <div class="gesture-icon">🔇</div>
+                            <div class="gesture-info">
+                                <h4>Mute System</h4>
+                                <p>Closed Fist</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shutdown Control -->
+                <div class="glass-panel system-controls">
+                    <button class="btn-shutdown" onclick="shutdownSystem()">
+                        ⚠️ Initiate System Shutdown
+                    </button>
+                    <p style="margin-top:10px; font-size:0.8rem; color:var(--text-muted)">
+                        Action cannot be undone. System will terminate.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="features-section reveal reveal-4">
+            <div class="glass-panel feature-card">
+                <span class="feat-icon">🎯</span>
+                <h3>Mode-Aware AI</h3>
+                <p>Intelligent context switching between Level Mode and Navigation Mode using gesture triggers.</p>
+            </div>
+
+            <div class="glass-panel feature-card">
+                <span class="feat-icon">⚡</span>
+                <h3>Zero Latency</h3>
+                <p>Real-time processing using MediaPipe & OpenCV for instant command execution.</p>
+            </div>
+
+            <div class="glass-panel feature-card">
+                <span class="feat-icon">🛠️</span>
+                <h3>Hardware Control</h3>
+                <p>Direct integration with system volume and brightness controllers for seamless adjustments.</p>
+            </div>
+
+            <div class="glass-panel feature-card">
+                <span class="feat-icon">🌐</span>
+                <h3>Web-Native</h3>
+                <p>Full control interface directly in your browser. No external desktop GUI required.</p>
+            </div>
+        </div>
+
     </div>
-    <div class="guide">
-        <div class="box"><h3>Left Hand</h3><p>Volume (Middle Up)<br>Backward (Middle Down)</p></div>
-        <div class="box"><h3>Right Hand</h3><p>Brightness (Middle Up)<br>Forward (Middle Down)</p></div>
-        <div class="box"><h3>System</h3><p>Fist = Mute<br>Thumb Down = Minimize</p></div>
-    </div>
+
+    <footer>
+        <div class="footer-glow"></div>
+        <div class="creator-text">
+            ARCHITECTED BY SAIYAM BAJPAI
+            <div
+                style="font-family: var(--font-body); font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; font-weight: 400;">
+                B.Tech in Computer Science & Design @ MITS Gwalior<br>
+                BS in Data Science @ IIT Madras
+            </div>
+        </div>
+        <div class="tech-badges">
+            <span>PYTHON</span>
+            <span>FLASK</span>
+            <span>OPENCV</span>
+            <span>MEDIAPIPE</span>
+            <span>V5.0.0</span>
+        </div>
+        <p style="margin-top:1rem; color:var(--text-muted); font-size:0.8rem;">
+            &copy; 2050 GestureFlow Industries. All Systems Operational.
+        </p>
+    </footer>
+
+    <script>
+        // Smooth Reveal Animation on Scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial animation handled by CSS classes
+        });
+
+        // Hover Sound Effect (Optional - purely visual feedback logic simulated here)
+        const cards = document.querySelectorAll('.gesture-card, .feature-card, .btn-shutdown');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Add subtle scale or glow logic here if needed beyond CSS
+            });
+        });
+
+        // Shutdown Logic
+        async function shutdownSystem() {
+            const btn = document.querySelector('.btn-shutdown');
+
+            if (confirm('WARNING: TERMINATION PROTOCOL INITIATED.\nAre you sure you want to shutdown GestureFlow?')) {
+                btn.innerHTML = 'TERMINATING...';
+                btn.style.background = '#ff0000';
+                btn.style.color = '#fff';
+
+                try {
+                    await fetch('/shutdown', { method: 'POST' });
+                } catch (e) {
+                    console.log("Shutdown signal sent.");
+                }
+
+                // Show shutdown screen
+                document.body.innerHTML = `
+                    <div class="shutdown-screen">
+                        <div>
+                            <div style="font-size:3rem; margin-bottom:20px;">SYSTEM OFFLINE</div>
+                            <div style="font-size:1rem; opacity:0.7; font-family:var(--font-body)">
+                                Connection Terminated.<br>You may now close this window.
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Random Tech Decoration - Dynamic Numbers
+        setInterval(() => {
+            const statusTarget = document.querySelector('.status-value');
+            if (statusTarget && statusTarget.innerText.includes('SCANNING')) {
+                // Keep simulation simple
+            }
+        }, 2000);
+    </script>
 </body>
+
 </html>
