@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GestureFlow AI</title>
+    <style>
+        body { background: #121212; color: white; font-family: sans-serif; text-align: center; }
+        .stream { border: 5px solid #007bff; border-radius: 15px; margin-top: 20px; box-shadow: 0 0 20px #007bff; }
+        .guide { display: flex; justify-content: center; gap: 30px; margin-top: 20px; }
+        .box { background: #1e1e1e; padding: 15px; border-radius: 10px; border-bottom: 3px solid #007bff; width: 250px; }
+        h1 { color: #007bff; }
+    </style>
+</head>
+<body>
+    <h1>🖐️ GestureFlow Web Dashboard</h1>
+    <div class="stream-container">
+        <img class="stream" src="{{ url_for('video_feed') }}" width="800">
+    </div>
+    <div class="guide">
+        <div class="box"><h3>Left Hand</h3><p>Volume (Middle Up)<br>Backward (Middle Down)</p></div>
+        <div class="box"><h3>Right Hand</h3><p>Brightness (Middle Up)<br>Forward (Middle Down)</p></div>
+        <div class="box"><h3>System</h3><p>Fist = Mute<br>Thumb Down = Minimize</p></div>
+    </div>
+</body>
+</html>
