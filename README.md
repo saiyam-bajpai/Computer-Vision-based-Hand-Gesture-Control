@@ -1,5 +1,5 @@
 # 🖐️ GestureFlow v5.0: The Web-AI Interface
-### *A B.Tech CSE 1st Year Project in Human-Computer Interaction*
+### *A B.Tech CSD(Computer Science & Design) 1st Year Project in Human-Computer Interaction*
 
 ![Python](https://img.shields.io/badge/Made%20with-Python-blue?style=for-the-badge&logo=python)
 ![MediaPipe](https://img.shields.io/badge/AI-MediaPipe-brightgreen?style=for-the-badge)
