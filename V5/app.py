@@ -10,6 +10,8 @@ from flask import Flask, render_template, Response
 # This ensures Flask finds the templates folder inside the sub-directory
 app = Flask(__name__, template_folder='templates')
 
+import time
+
 # --- INITIALIZE MEDIAPIPE ONCE ---
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(max_num_hands=2, min_detection_confidence=0.7)
@@ -23,9 +25,16 @@ try:
 except:
     print("Audio device not found.")
 
+# Global Camera State
+camera_active = True
+
 def generate_frames():
     # Open camera inside the generator
     cap = cv2.VideoCapture(0)
+    # Attempt to set HD resolution
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+
     vol_bar, vol_per = 400, 0
     bright_bar, bright_per = 400, 0
     key_delay = 0
@@ -36,6 +45,7 @@ def generate_frames():
             break
         
         img = cv2.flip(img, 1)
+        h, w, c = img.shape
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         results = hands.process(img_rgb)
 
@@ -44,7 +54,6 @@ def generate_frames():
                 label = results.multi_handedness[i].classification[0].label 
                 lm_list = []
                 for id, lm in enumerate(hand_lms.landmark):
-                    h, w, c = img.shape
                     lm_list.append([id, int(lm.x * w), int(lm.y * h)])
 
                 if lm_list:
@@ -59,7 +68,7 @@ def generate_frames():
                     # FEATURE: MUTE (Fist)
                     if up_count == 0 and not is_thumb_up:
                         if volume: volume.SetMute(1, None)
-                        cv2.putText(img, "MUTE ACTIVE", (450, 400), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 3)
+                        cv2.putText(img, "MUTE ACTIVE", (int(w/2) - 100, 400), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 3)
 
                     # MODE 1: LEVEL MODE (Middle Finger UP)
                     if is_middle_up:
@@ -83,11 +92,13 @@ def generate_frames():
                         if key_delay == 0:
                             if label == 'Right' and up_count == 1 and is_index_up:
                                 pyautogui.press('right')
-                                cv2.putText(img, "FORWARD >>", (450, 360), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
+                                # Right side text
+                                cv2.putText(img, "FORWARD >>", (w - 350, 360), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
                                 key_delay = 15
                             elif label == 'Left' and up_count == 1 and is_index_up:
                                 pyautogui.press('left')
-                                cv2.putText(img, "<< BACKWARD", (450, 360), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 3)
+                                # Left side text
+                                cv2.putText(img, "<< BACKWARD", (50, 360), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 3)
                                 key_delay = 15
                             elif lm_list[4][2] > lm_list[2][2] and up_count == 0:
                                 pyautogui.hotkey('win', 'd')
@@ -98,10 +109,14 @@ def generate_frames():
         if key_delay > 0: key_delay -= 1
 
         # Draw HUD Bars
+        # Volume Bar (Left)
         cv2.rectangle(img, (50, 150), (85, 400), (255, 0, 0), 2)
         cv2.rectangle(img, (50, int(vol_bar)), (85, 400), (255, 0, 0), cv2.FILLED)
-        cv2.rectangle(img, (1180, 150), (1215, 400), (0, 255, 255), 2)
-        cv2.rectangle(img, (1180, int(bright_bar)), (1215, 400), (0, 255, 255), cv2.FILLED)
+        
+        # Brightness Bar (Right - Dynamic)
+        right_bar_x = w - 100 # End x will be w-65
+        cv2.rectangle(img, (right_bar_x, 150), (right_bar_x + 35, 400), (0, 255, 255), 2)
+        cv2.rectangle(img, (right_bar_x, int(bright_bar)), (right_bar_x + 35, 400), (0, 255, 255), cv2.FILLED)
 
         # Web Stream Encoding
         ret, buffer = cv2.imencode('.jpg', img)

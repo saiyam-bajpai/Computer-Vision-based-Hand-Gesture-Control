@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Aura | Neural Interface</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent: #3b82f6; --bg: #050505; --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.08); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: #f8fafc; font-family: 'Outfit', sans-serif; overflow: hidden; height: 100vh; }
+
+        /* LOADING SPLASH */
+        #loader { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .ring { width: 80px; height: 80px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* MAIN APP */
+        .app-container { display: grid; grid-template-columns: 320px 1fr 320px; grid-template-rows: 80px 1fr 80px; gap: 20px; padding: 20px; height: 100vh; background: radial-gradient(circle at 50% 50%, #111 0%, #050505 100%); }
+        header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; }
+        .logo { font-family: 'Space Grotesk'; font-weight: 700; font-size: 1.5rem; background: linear-gradient(90deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .viewport { position: relative; border-radius: 30px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .stream { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+
+        .panel { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 24px; padding: 24px; }
+        .panel-title { font-size: 0.7rem; letter-spacing: 2px; color: #64748b; font-weight: 600; margin-bottom: 20px; }
+        
+        .card { display: flex; align-items: center; gap: 15px; padding: 15px; border-radius: 16px; background: rgba(255,255,255,0.02); margin-bottom: 12px; border: 1px solid transparent; transition: 0.3s; }
+        .card:hover { background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.2); }
+        .icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(59, 130, 246, 0.1); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+
+        footer { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-around; background: var(--glass); border-radius: 20px; border: 1px solid var(--border); }
+        .status { padding: 8px 16px; background: rgba(16, 185, 129, 0.1); color: #10b981; border-radius: 100px; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; }
+        .dot { width: 8px; height: 8px; background: currentColor; border-radius: 50%; }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="ring"></div>
+        <p style="margin-top:20px; letter-spacing:5px; font-size:0.7rem; opacity:0.6">AURA OS INITIALIZING</p>
+    </div>
+
+    <div class="app-container">
+        <header>
+            <div class="logo">AURA.AI</div>
+            <div style="font-size:0.8rem; opacity:0.4">NEURAL INTERFACE v6.2</div>
+        </header>
+
+        <aside class="panel">
+            <p class="panel-title">SPATIAL MODULES</p>
+            <div class="card"><div class="icon">🎨</div><div><p style="font-size:0.9rem">Neon Sketch</p><p style="font-size:0.7rem; opacity:0.5">Index + Middle Up</p></div></div>
+            <div class="card"><div class="icon">🌍</div><div><p style="font-size:0.9rem">Hologram</p><p style="font-size:0.7rem; opacity:0.5">Draw Circle</p></div></div>
+            <div class="card"><div class="icon">🔉</div><div><p style="font-size:0.9rem">Level Adjust</p><p style="font-size:0.7rem; opacity:0.5">Middle Up + Pinch</p></div></div>
+        </aside>
+
+        <main class="viewport">
+            <img src="{{ url_for('video_feed') }}" class="stream">
+        </main>
+
+        <aside class="panel">
+            <p class="panel-title">SYSTEM UTILS</p>
+            <div class="card"><div class="icon">⏩</div><div><p style="font-size:0.9rem">Navigation</p><p style="font-size:0.7rem; opacity:0.5">Slide Index Up</p></div></div>
+            <div class="card"><div class="icon">🔇</div><div><p style="font-size:0.9rem">Quick Mute</p><p style="font-size:0.7rem; opacity:0.5">Closed Fist</p></div></div>
+            <div class="card"><div class="icon">💻</div><div><p style="font-size:0.9rem">Desktop</p><p style="font-size:0.7rem; opacity:0.5">Thumb Hidden</p></div></div>
+        </aside>
+
+        <footer>
+            <div class="status"><div class="dot"></div> Neural Engine Online</div>
+            <div style="opacity:0.3; font-size:0.8rem">Architected by Saiyam Bajpai</div>
+            <div class="status" style="color:#3b82f6; background:rgba(59,130,246,0.1)">Latency: 9ms</div>
+        </footer>
+    </div>
+
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                gsap.to("#loader", { opacity: 0, duration: 1, onComplete: () => document.getElementById('loader').style.display='none' });
+                gsap.from(".app-container", { scale: 1.05, opacity: 0, duration: 1.5, ease: "expo.out" });
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

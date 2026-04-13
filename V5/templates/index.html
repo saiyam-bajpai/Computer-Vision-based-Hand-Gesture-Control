@@ -633,15 +633,8 @@
                 </div>
             </div>
 
-            <!-- Right: Controls & Context -->
-            <div class="side-panel reveal reveal-4">
-
-                <!-- Status Indicators -->
-                <div class="status-grid glass-panel"
-                    style="background:transparent; border:none; box-shadow:none; padding:0;">
-                    <div class="status-box">
-                        <h5>Active Mode</h5>
-                        <div class="status-value" style="color:var(--primary)">NAVIGATION</div>
+            <!-- Right: Controls & Context -
+             e" style="color:var(--primary)">NAVIGATION</div>
                     </div>
                     <div class="status-box">
                         <h5>Hand Detect</h5>
@@ -650,93 +643,93 @@
                 </div>
 
                 <!-- Cheatsheet -->
-                <div class="glass-panel" style="padding: 1.5rem;">
-                    <div class="panel-header">
-                        COMMAND CENTER
-                        <span style="font-size:0.7rem; opacity:0.7">GESTURE LIBRARY</span>
+            <div class="glass-panel" style="padding: 1.5rem;">
+                <div class="panel-header">
+                    COMMAND CENTER
+                    <span style="font-size:0.7rem; opacity:0.7">GESTURE LIBRARY</span>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div class="gesture-card">
+                        <div class="gesture-icon">👎</div>
+                        <div class="gesture-info">
+                            <h4>Windows + D</h4>
+                            <p>Thumbs Down</p>
+                        </div>
                     </div>
 
-                    <div style="display:flex; flex-direction:column; gap:10px;">
-                        <div class="gesture-card">
-                            <div class="gesture-icon">👎</div>
-                            <div class="gesture-info">
-                                <h4>Windows + D</h4>
-                                <p>Thumbs Down</p>
-                            </div>
+                    <div class="gesture-card">
+                        <div class="gesture-icon">🔊</div>
+                        <div class="gesture-info">
+                            <h4>Volume Control</h4>
+                            <p>Left Hand: Pinch + Middle UP</p>
                         </div>
+                    </div>
 
-                        <div class="gesture-card">
-                            <div class="gesture-icon">🔊</div>
-                            <div class="gesture-info">
-                                <h4>Volume Control</h4>
-                                <p>Left Hand: Pinch + Middle UP</p>
-                            </div>
+                    <div class="gesture-card">
+                        <div class="gesture-icon">🔆</div>
+                        <div class="gesture-info">
+                            <h4>Brightness</h4>
+                            <p>Right Hand: Pinch + Middle UP</p>
                         </div>
+                    </div>
 
-                        <div class="gesture-card">
-                            <div class="gesture-icon">🔆</div>
-                            <div class="gesture-info">
-                                <h4>Brightness</h4>
-                                <p>Right Hand: Pinch + Middle UP</p>
-                            </div>
+                    <div class="gesture-card">
+                        <div class="gesture-icon">⏩</div>
+                        <div class="gesture-info">
+                            <h4>Media Nav</h4>
+                            <p>Index UP (R/L) + Middle DOWN</p>
                         </div>
+                    </div>
 
-                        <div class="gesture-card">
-                            <div class="gesture-icon">⏩</div>
-                            <div class="gesture-info">
-                                <h4>Media Nav</h4>
-                                <p>Index UP (R/L) + Middle DOWN</p>
-                            </div>
-                        </div>
-
-                        <div class="gesture-card">
-                            <div class="gesture-icon">🔇</div>
-                            <div class="gesture-info">
-                                <h4>Mute System</h4>
-                                <p>Closed Fist</p>
-                            </div>
+                    <div class="gesture-card">
+                        <div class="gesture-icon">🔇</div>
+                        <div class="gesture-info">
+                            <h4>Mute System</h4>
+                            <p>Closed Fist</p>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Shutdown Control -->
-                <div class="glass-panel system-controls">
-                    <button class="btn-shutdown" onclick="shutdownSystem()">
-                        ⚠️ Initiate System Shutdown
-                    </button>
-                    <p style="margin-top:10px; font-size:0.8rem; color:var(--text-muted)">
-                        Action cannot be undone. System will terminate.
-                    </p>
-                </div>
+            <!-- Shutdown Control -->
+            <div class="glass-panel system-controls">
+                <button class="btn-shutdown" onclick="shutdownSystem()">
+                    ⚠️ Initiate System Shutdown
+                </button>
+                <p style="margin-top:10px; font-size:0.8rem; color:var(--text-muted)">
+                    Action cannot be undone. System will terminate.
+                </p>
             </div>
         </div>
+    </div>
 
-        <!-- Features Grid -->
-        <div class="features-section reveal reveal-4">
-            <div class="glass-panel feature-card">
-                <span class="feat-icon">🎯</span>
-                <h3>Mode-Aware AI</h3>
-                <p>Intelligent context switching between Level Mode and Navigation Mode using gesture triggers.</p>
-            </div>
-
-            <div class="glass-panel feature-card">
-                <span class="feat-icon">⚡</span>
-                <h3>Zero Latency</h3>
-                <p>Real-time processing using MediaPipe & OpenCV for instant command execution.</p>
-            </div>
-
-            <div class="glass-panel feature-card">
-                <span class="feat-icon">🛠️</span>
-                <h3>Hardware Control</h3>
-                <p>Direct integration with system volume and brightness controllers for seamless adjustments.</p>
-            </div>
-
-            <div class="glass-panel feature-card">
-                <span class="feat-icon">🌐</span>
-                <h3>Web-Native</h3>
-                <p>Full control interface directly in your browser. No external desktop GUI required.</p>
-            </div>
+    <!-- Features Grid -->
+    <div class="features-section reveal reveal-4">
+        <div class="glass-panel feature-card">
+            <span class="feat-icon">🎯</span>
+            <h3>Mode-Aware AI</h3>
+            <p>Intelligent context switching between Level Mode and Navigation Mode using gesture triggers.</p>
         </div>
+
+        <div class="glass-panel feature-card">
+            <span class="feat-icon">⚡</span>
+            <h3>Zero Latency</h3>
+            <p>Real-time processing using MediaPipe & OpenCV for instant command execution.</p>
+        </div>
+
+        <div class="glass-panel feature-card">
+            <span class="feat-icon">🛠️</span>
+            <h3>Hardware Control</h3>
+            <p>Direct integration with system volume and brightness controllers for seamless adjustments.</p>
+        </div>
+
+        <div class="glass-panel feature-card">
+            <span class="feat-icon">🌐</span>
+            <h3>Web-Native</h3>
+            <p>Full control interface directly in your browser. No external desktop GUI required.</p>
+        </div>
+    </div>
 
     </div>
 
