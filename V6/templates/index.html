@@ -2,83 +2,271 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Aura | Neural Interface</title>
+    <title>GestureFlow // Saiyam Bajpai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,700&family=Outfit:wght@200;400;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <style>
-        :root { --accent: #3b82f6; --bg: #050505; --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.08); }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); color: #f8fafc; font-family: 'Outfit', sans-serif; overflow: hidden; height: 100vh; }
+        :root {
+            --primary: #00f0ff;
+            --accent: #ff006e;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
 
-        /* LOADING SPLASH */
-        #loader { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .ring { width: 80px; height: 80px; border: 2px solid var(--border); border-top: 2px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        * { box-sizing: border-box; scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+        }
 
-        /* MAIN APP */
-        .app-container { display: grid; grid-template-columns: 320px 1fr 320px; grid-template-rows: 80px 1fr 80px; gap: 20px; padding: 20px; height: 100vh; background: radial-gradient(circle at 50% 50%, #111 0%, #050505 100%); }
-        header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding: 0 30px; background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; }
-        .logo { font-family: 'Space Grotesk'; font-weight: 700; font-size: 1.5rem; background: linear-gradient(90deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        /* --- BACKGROUND LAYER --- */
+        .bg-wrapper {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: url('"templates\popmelon-ai-generated-8915838_1920.jpg"') center/cover; /* ADD YOUR LINK HERE */
+            filter: blur(60px) brightness(0.3);
+        }
 
-        .viewport { position: relative; border-radius: 30px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        .stream { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(125deg, rgba(0,0,0,0.8), rgba(123, 44, 191, 0.1), rgba(0, 240, 255, 0.05));
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+        }
 
-        .panel { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 24px; padding: 24px; }
-        .panel-title { font-size: 0.7rem; letter-spacing: 2px; color: #64748b; font-weight: 600; margin-bottom: 20px; }
-        
-        .card { display: flex; align-items: center; gap: 15px; padding: 15px; border-radius: 16px; background: rgba(255,255,255,0.02); margin-bottom: 12px; border: 1px solid transparent; transition: 0.3s; }
-        .card:hover { background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.2); }
-        .icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(59, 130, 246, 0.1); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        @keyframes gradientMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 
-        footer { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-around; background: var(--glass); border-radius: 20px; border: 1px solid var(--border); }
-        .status { padding: 8px 16px; background: rgba(16, 185, 129, 0.1); color: #10b981; border-radius: 100px; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; }
-        .dot { width: 8px; height: 8px; background: currentColor; border-radius: 50%; }
+        /* --- HEADER --- */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 30px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+        }
+
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            font-style: italic;
+            letter-spacing: -2px;
+        }
+
+        .dev-btn {
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 25px;
+            border-radius: 100px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.4s;
+        }
+
+        .dev-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--primary); transform: scale(1.05); }
+
+        .ping {
+            width: 8px; height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .ping::after {
+            content: ''; position: absolute; inset: -4px;
+            border: 2px solid var(--primary); border-radius: 50%;
+            animation: pingAnim 1.5s infinite;
+        }
+
+        @keyframes pingAnim { 0% {transform: scale(1); opacity:1;} 100% {transform: scale(3); opacity:0;} }
+
+        /* --- SECTIONS --- */
+        section { min-height: 100vh; padding: 120px 60px; display: flex; flex-direction: column; align-items: center; }
+
+        .video-container {
+            width: 90%; max-width: 1200px;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 40px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+        }
+
+        .video-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Protocol Section (Wavy Effects) */
+        .protocol-title {
+            font-family: 'Cormorant Garamond';
+            font-size: 5rem;
+            margin-bottom: 50px;
+            background: linear-gradient(90deg, #fff, var(--primary), #fff);
+            background-size: 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: waveFlow 4s linear infinite;
+        }
+
+        @keyframes waveFlow { to { background-position: 200% center; } }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            width: 100%; max-width: 1200px;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.4s;
+        }
+
+        .card:hover { transform: translateY(-10px); border-color: var(--accent); }
+
+        .card h3 { font-family: 'Cormorant Garamond'; font-size: 2rem; margin-bottom: 15px; }
+
+        /* --- FOOTER (Wavy Animated) --- */
+        footer {
+            padding: 100px 60px;
+            position: relative;
+            background: linear-gradient(180deg, transparent, rgba(123, 44, 191, 0.1));
+            overflow: hidden;
+        }
+
+        .footer-content {
+            display: grid; grid-template-columns: 1fr 2fr; gap: 60px;
+            position: relative; z-index: 2;
+        }
+
+        .wave-container {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; opacity: 0.3; pointer-events: none;
+        }
+
+        /* Mock SVG Wave Background */
+        .wave { animation: wave 10s cubic-bezier( 0.36, 0.45, 0.63, 0.53) infinite; transform: translate3d(0, 0, 0); }
+        @keyframes wave { 0% { margin-left: 0; } 100% { margin-left: -1600px; } }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="ring"></div>
-        <p style="margin-top:20px; letter-spacing:5px; font-size:0.7rem; opacity:0.6">AURA OS INITIALIZING</p>
-    </div>
+    <div class="bg-wrapper"></div>
+    <div class="bg-overlay"></div>
 
-    <div class="app-container">
-        <header>
-            <div class="logo">AURA.AI</div>
-            <div style="font-size:0.8rem; opacity:0.4">NEURAL INTERFACE v6.2</div>
-        </header>
+    <nav>
+        <div class="logo">GestureFlow</div>
+        <a href="#" class="dev-btn">
+            <div class="ping"></div> DEVELOPER PORTAL
+        </a>
+    </nav>
 
-        <aside class="panel">
-            <p class="panel-title">SPATIAL MODULES</p>
-            <div class="card"><div class="icon">🎨</div><div><p style="font-size:0.9rem">Neon Sketch</p><p style="font-size:0.7rem; opacity:0.5">Index + Middle Up</p></div></div>
-            <div class="card"><div class="icon">🌍</div><div><p style="font-size:0.9rem">Hologram</p><p style="font-size:0.7rem; opacity:0.5">Draw Circle</p></div></div>
-            <div class="card"><div class="icon">🔉</div><div><p style="font-size:0.9rem">Level Adjust</p><p style="font-size:0.7rem; opacity:0.5">Middle Up + Pinch</p></div></div>
-        </aside>
+    <section>
+        <div class="video-container">
+            <img src="/video_feed">
+        </div>
+        <div style="margin-top: 50px; text-align: center;">
+            <p style="letter-spacing: 5px; opacity: 0.5; font-size: 0.8rem;">SCROLL TO INITIALIZE PROTOCOLS</p>
+        </div>
+    </section>
 
-        <main class="viewport">
-            <img src="{{ url_for('video_feed') }}" class="stream">
-        </main>
+    <section id="protocols">
+        <h2 class="protocol-title">Spatial Commands</h2>
+        <div class="feature-grid">
+            <div class="card">
+                <h3>Neon Ink</h3>
+                <p>Use Index and Middle fingers to leave a trail of digital light across the interface.</p>
+            </div>
+            <div class="card">
+                <h3>HCI Gravity</h3>
+                <p>A "Rock On" sign injects a system-level Spacebar trigger for media and gaming.</p>
+            </div>
+            <div class="card">
+                <h3>Level Sync</h3>
+                <p>Pinch and slide to master your environment—Volume on the left, Brightness on the right.</p>
+            </div>
+        </div>
+    </section>
 
-        <aside class="panel">
-            <p class="panel-title">SYSTEM UTILS</p>
-            <div class="card"><div class="icon">⏩</div><div><p style="font-size:0.9rem">Navigation</p><p style="font-size:0.7rem; opacity:0.5">Slide Index Up</p></div></div>
-            <div class="card"><div class="icon">🔇</div><div><p style="font-size:0.9rem">Quick Mute</p><p style="font-size:0.7rem; opacity:0.5">Closed Fist</p></div></div>
-            <div class="card"><div class="icon">💻</div><div><p style="font-size:0.9rem">Desktop</p><p style="font-size:0.7rem; opacity:0.5">Thumb Hidden</p></div></div>
-        </aside>
+    <section>
+        <h2 style="font-family: 'Cormorant Garamond'; font-size: 4rem; font-style: italic;">Next-Gen Features</h2>
+        <div class="feature-grid">
+            <div class="card">
+                <span style="font-size: 2.5rem;">🧠</span>
+                <h3>Neural Mapping</h3>
+                <p>Adaptive hand tracking that learns your specific skeletal structure over time.</p>
+            </div>
+            <div class="card">
+                <span style="font-size: 2.5rem;">⚡</span>
+                <h3>Zero Latency</h3>
+                <p>Optimized C++ back-threaded processing for sub-10ms response times.</p>
+            </div>
+            <div class="card">
+                <span style="font-size: 2.5rem;">🎨</span>
+                <h3>Visual Feedback</h3>
+                <p>On-screen particle effects that react to the speed and velocity of your gestures.</p>
+            </div>
+        </div>
+    </section>
 
-        <footer>
-            <div class="status"><div class="dot"></div> Neural Engine Online</div>
-            <div style="opacity:0.3; font-size:0.8rem">Architected by Saiyam Bajpai</div>
-            <div class="status" style="color:#3b82f6; background:rgba(59,130,246,0.1)">Latency: 9ms</div>
-        </footer>
-    </div>
+    <footer>
+        <div class="footer-content">
+            <div class="logo" style="font-size: 4rem;">GestureFlow</div>
+            <div>
+                <p style="font-size: 1.4rem; color: var(--primary); font-weight: 500;">Architecture by Saiyam Bajpai</p>
+                <p style="opacity: 0.6; line-height: 1.8; max-width: 600px;">
+                    Saiyam Bajpai is a student at the intersection of Design and Data Science. 
+                    He is currently pursuing his B.Tech in Computer Science & Design at MITS Gwalior 
+                    and a BS in Data Science at IIT Madras. This project is a testament to the future 
+                    of Human-Computer Interaction.
+                </p>
+                <div style="margin-top: 30px; display: flex; gap: 20px; font-size: 0.7rem; letter-spacing: 2px;">
+                    <span>PYTHON / FLASK</span> <span>MEDIAPIPE</span> <span>OPEN CV</span>
+                </div>
+            </div>
+        </div>
+        <div class="wave-container">
+            <svg viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto" style="width: 100%; height: 100px;">
+                <defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" /></defs>
+                <g class="wave">
+                    <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(0, 240, 255, 0.1)" />
+                    <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255, 0, 110, 0.1)" />
+                </g>
+            </svg>
+        </div>
+    </footer>
 
     <script>
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                gsap.to("#loader", { opacity: 0, duration: 1, onComplete: () => document.getElementById('loader').style.display='none' });
-                gsap.from(".app-container", { scale: 1.05, opacity: 0, duration: 1.5, ease: "expo.out" });
-            }, 2000);
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Feature card reveal
+        gsap.from(".card", {
+            scrollTrigger: { trigger: ".feature-grid", start: "top 80%" },
+            y: 50, opacity: 0, stagger: 0.2, duration: 1, ease: "power4.out"
+        });
+
+        // Wavy text animation
+        gsap.from(".protocol-title", {
+            scrollTrigger: { trigger: ".protocol-title", start: "top 90%" },
+            x: -100, opacity: 0, duration: 1.5, ease: "expo.out"
         });
     </script>
 </body>
