@@ -269,11 +269,11 @@ def generate_frames():
                     continue   # ← skip ALL further gesture logic
 
                 # ════════════════════════════════════════════════════════════
-                #  DRAW MODE — ring + pinky UP, index + middle DOWN
-                #  (unique gesture; does not clash with any existing command)
+                #  DRAW MODE — peace sign (index + middle UP, ring + pinky DOWN)
+                #  Middle-up is checked here first so level mode never fires.
                 # ════════════════════════════════════════════════════════════
-                is_draw_gesture = (is_ring_up and is_pinky_up
-                                   and not is_index_up and not is_middle_up)
+                is_draw_gesture = (is_index_up and is_middle_up
+                                   and not is_ring_up and not is_pinky_up)
 
                 if is_draw_gesture:
                     in_draw_mode_this_frame = True
@@ -368,6 +368,16 @@ def generate_frames():
                                 key_delay = 15
                                 g_mode    = 'NAV — BWD'
 
+                            # ── SPACEBAR (index + pinky UP, middle + ring DOWN) ──
+                            elif is_index_up and is_pinky_up and not is_middle_up and not is_ring_up:
+                                pyautogui.press('space')
+                                cv2.putText(img, "[ SPACE ]",
+                                            (int(w / 2) - 90, 360),
+                                            cv2.FONT_HERSHEY_SIMPLEX, 1.5,
+                                            (255, 200, 0), 3, cv2.LINE_AA)
+                                key_delay = 15
+                                g_mode    = 'SPACEBAR'
+
                             # ── SHOW DESKTOP (tucked-thumb fist) ──
                             elif lm_list[4][2] > lm_list[2][2] and up_count == 0:
                                 pyautogui.hotkey('win', 'd')
@@ -413,7 +423,7 @@ def generate_frames():
         if in_draw_mode_this_frame:
             color_idx  = (len(draw_path) // 60) % len(DRAW_COLORS)
             draw_color = DRAW_COLORS[color_idx]
-            cv2.putText(img, "◉ DRAW MODE — ring+pinky up",
+            cv2.putText(img, "◉ DRAW MODE — peace sign (index + middle up)",
                         (int(w / 2) - 200, 50),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.85, draw_color, 2, cv2.LINE_AA)
 
