@@ -55,7 +55,7 @@ DRAW_COLORS = [
 # ─────────────────────────────────────────────────────────────────────────────
 globe_active       = False
 globe_pos          = [640, 360]
-globe_radius       = 90
+globe_radius       = 120
 globe_last_touched = 0.0
 GLOBE_TIMEOUT      = 4.0        # seconds before globe fades out
 globe_alpha        = 0.0        # fade-in / fade-out scalar [0..1]

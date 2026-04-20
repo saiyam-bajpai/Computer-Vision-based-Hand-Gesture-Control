@@ -1,273 +1,1122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>GestureFlow // Saiyam Bajpai</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,700&family=Outfit:wght@200;400;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <style>
-        :root {
-            --primary: #00f0ff;
-            --accent: #ff006e;
-            --glass: rgba(255, 255, 255, 0.03);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GestureFlow v6.0 — Neural Gesture Interface</title>
 
-        * { box-sizing: border-box; scroll-behavior: smooth; }
-        body {
-            margin: 0;
-            background: #000;
-            color: #fff;
-            font-family: 'Outfit', sans-serif;
-            overflow-x: hidden;
-        }
+  <!-- Fonts: Syne (display) + DM Sans (body) — rounded, modern, not sharp -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
 
-        /* --- BACKGROUND LAYER --- */
-        .bg-wrapper {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            background: url('"templates\popmelon-ai-generated-8915838_1920.jpg"') center/cover; /* ADD YOUR LINK HERE */
-            filter: blur(60px) brightness(0.3);
-        }
+  <!-- GSAP for loading animation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-        .bg-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            background: linear-gradient(125deg, rgba(0,0,0,0.8), rgba(123, 44, 191, 0.1), rgba(0, 240, 255, 0.05));
-            background-size: 400% 400%;
-            animation: gradientMove 15s ease infinite;
-        }
+  <style>
+    /* ═══════════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════════ */
+    :root {
+      --bg:          #050913;
+      --surface:     rgba(255,255,255,0.035);
+      --surface-hi:  rgba(255,255,255,0.065);
+      --border:      rgba(255,255,255,0.08);
+      --border-glow: rgba(0,229,255,0.28);
 
-        @keyframes gradientMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+      --cyan:        #00e5ff;
+      --cyan-dim:    rgba(0,229,255,0.12);
+      --purple:      #b87cff;
+      --purple-dim:  rgba(184,124,255,0.12);
+      --mint:        #00ffc3;
+      --mint-dim:    rgba(0,255,195,0.12);
+      --orange:      #ff9a3c;
+      --orange-dim:  rgba(255,154,60,0.12);
+      --red:         #ff4d6d;
+      --red-dim:     rgba(255,77,109,0.12);
 
-        /* --- HEADER --- */
-        nav {
-            position: fixed;
-            top: 0; width: 100%;
-            padding: 30px 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
-        }
+      --text:        #eef2ff;
+      --text-2:      #94a3b8;
+      --text-3:      #475569;
 
-        .logo {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.5rem;
-            font-style: italic;
-            letter-spacing: -2px;
-        }
+      --font-display: 'Syne', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
 
-        .dev-btn {
-            background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 12px 25px;
-            border-radius: 100px;
-            color: #fff;
-            text-decoration: none;
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: 0.4s;
-        }
+      --radius:  18px;
+      --radius-sm: 10px;
+      --glow-cyan:   0 0 24px rgba(0,229,255,0.35);
+      --glow-purple: 0 0 24px rgba(184,124,255,0.35);
+    }
 
-        .dev-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--primary); transform: scale(1.05); }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .ping {
-            width: 8px; height: 8px;
-            background: var(--primary);
-            border-radius: 50%;
-            position: relative;
-            box-shadow: 0 0 10px var(--primary);
-        }
+    html { scroll-behavior: smooth; }
 
-        .ping::after {
-            content: ''; position: absolute; inset: -4px;
-            border: 2px solid var(--primary); border-radius: 50%;
-            animation: pingAnim 1.5s infinite;
-        }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
 
-        @keyframes pingAnim { 0% {transform: scale(1); opacity:1;} 100% {transform: scale(3); opacity:0;} }
+    /* ── ambient blobs ── */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+    body::before {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 70%);
+      top: -200px; left: -200px;
+    }
+    body::after {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(184,124,255,0.07) 0%, transparent 70%);
+      bottom: -150px; right: -150px;
+      animation-direction: alternate-reverse;
+    }
 
-        /* --- SECTIONS --- */
-        section { min-height: 100vh; padding: 120px 60px; display: flex; flex-direction: column; align-items: center; }
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(60px, 40px) scale(1.15); }
+    }
 
-        .video-container {
-            width: 90%; max-width: 1200px;
-            aspect-ratio: 16/9;
-            background: #000;
-            border-radius: 40px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
-        }
+    /* ── subtle grid overlay ── */
+    .grid-overlay {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
 
-        .video-container img { width: 100%; height: 100%; object-fit: cover; }
+    .wrap { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
 
-        /* Protocol Section (Wavy Effects) */
-        .protocol-title {
-            font-family: 'Cormorant Garamond';
-            font-size: 5rem;
-            margin-bottom: 50px;
-            background: linear-gradient(90deg, #fff, var(--primary), #fff);
-            background-size: 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: waveFlow 4s linear infinite;
-        }
+    /* ─────────────────────────────────────
+       SCROLLBAR
+    ───────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.4); border-radius: 3px; }
 
-        @keyframes waveFlow { to { background-position: 200% center; } }
+    /* ─────────────────────────────────────
+       LOADING SCREEN
+    ───────────────────────────────────── */
+    #loader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #020408;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .loader-logo {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      color: var(--cyan);
+      letter-spacing: 6px;
+      text-shadow: 0 0 40px rgba(0,229,255,0.6);
+      opacity: 0;
+    }
+    .loader-sub {
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      color: var(--text-2);
+      letter-spacing: 4px;
+      opacity: 0;
+    }
+    .boot-lines {
+      display: flex; flex-direction: column; gap: 10px;
+      width: min(420px, 90vw);
+    }
+    .boot-line {
+      font-family: var(--font-body); font-size: 0.78rem;
+      color: var(--text-2); letter-spacing: 1px;
+      display: flex; align-items: center; gap: 12px;
+      opacity: 0;
+    }
+    .boot-line .check {
+      color: var(--mint); font-size: 0.75rem;
+      opacity: 0; flex-shrink: 0;
+    }
+    .loader-bar-wrap {
+      width: min(420px, 90vw); height: 3px;
+      background: rgba(255,255,255,0.06); border-radius: 2px;
+      overflow: hidden; opacity: 0;
+    }
+    .loader-bar-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      border-radius: 2px;
+      box-shadow: 0 0 12px var(--cyan);
+      transition: width 0.4s ease;
+    }
 
-        /* Feature Cards */
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            width: 100%; max-width: 1200px;
-        }
+    /* ─────────────────────────────────────
+       MAIN APP WRAPPER
+    ───────────────────────────────────── */
+    #app { opacity: 0; position: relative; z-index: 1; }
 
-        .card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            padding: 40px;
-            border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.4s;
-        }
+    /* ─────────────────────────────────────
+       HEADER
+    ───────────────────────────────────── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(5,9,19,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 66px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 1.3rem; letter-spacing: 2px;
+      color: var(--text);
+    }
+    .logo-mark {
+      width: 34px; height: 34px;
+      border: 2px solid var(--cyan);
+      border-radius: 9px;
+      display: grid; place-items: center;
+      font-size: 1rem; color: var(--cyan);
+      box-shadow: var(--glow-cyan);
+    }
+    .logo-v {
+      font-size: 0.65rem; font-weight: 500;
+      background: var(--cyan-dim);
+      color: var(--cyan); border: 1px solid rgba(0,229,255,0.25);
+      padding: 2px 8px; border-radius: 20px;
+      letter-spacing: 1px; font-family: var(--font-body);
+    }
+    .header-right {
+      display: flex; align-items: center; gap: 20px;
+    }
+    .status-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--mint-dim); border: 1px solid rgba(0,255,195,0.2);
+      border-radius: 20px; padding: 5px 14px;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px;
+      color: var(--mint);
+    }
+    .status-pip {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--mint); box-shadow: 0 0 8px var(--mint);
+      animation: pip 2s ease-in-out infinite;
+    }
+    @keyframes pip { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .header-links { display: flex; gap: 16px; }
+    .header-links a {
+      color: var(--text-2); font-size: 1rem;
+      transition: color .25s, transform .25s;
+      text-decoration: none;
+    }
+    .header-links a:hover { color: var(--cyan); transform: translateY(-2px); }
 
-        .card:hover { transform: translateY(-10px); border-color: var(--accent); }
+    /* ─────────────────────────────────────
+       HERO
+    ───────────────────────────────────── */
+    .hero {
+      padding: 90px 0 70px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--cyan-dim); border: 1px solid rgba(0,229,255,0.2);
+      color: var(--cyan); font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 2px; padding: 6px 18px; border-radius: 20px;
+      margin-bottom: 28px; text-transform: uppercase;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #fff 30%, var(--cyan) 70%, var(--purple));
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+    }
+    .hero p {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--text-2); max-width: 560px; margin: 0 auto 36px;
+      font-weight: 300;
+    }
+    .hero-orb {
+      position: absolute; border-radius: 50%; pointer-events: none;
+      filter: blur(80px); animation: drift 12s ease-in-out infinite alternate;
+    }
+    .hero-orb-1 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(0,229,255,0.12), transparent 70%);
+      top: -100px; left: 10%;
+    }
+    .hero-orb-2 {
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(184,124,255,0.12), transparent 70%);
+      bottom: -50px; right: 8%;
+      animation-direction: alternate-reverse;
+    }
+    .hero-stats {
+      display: flex; justify-content: center; gap: 40px;
+      flex-wrap: wrap;
+    }
+    .hero-stat {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .hero-stat-val {
+      font-family: var(--font-display); font-size: 1.8rem; font-weight: 700;
+      color: var(--text);
+    }
+    .hero-stat-val span { color: var(--cyan); }
+    .hero-stat-label { font-size: 0.72rem; color: var(--text-3); letter-spacing: 2px; text-transform: uppercase; }
 
-        .card h3 { font-family: 'Cormorant Garamond'; font-size: 2rem; margin-bottom: 15px; }
+    /* ─────────────────────────────────────
+       INTERFACE SECTION (BENTO GRID)
+    ───────────────────────────────────── */
+    .interface-section { padding-bottom: 80px; }
+    .section-eyebrow {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 3px;
+      color: var(--cyan); text-transform: uppercase; margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 700; margin-bottom: 8px; color: var(--text);
+    }
+    .section-sub { color: var(--text-2); font-size: 0.95rem; font-weight: 300; margin-bottom: 40px; }
 
-        /* --- FOOTER (Wavy Animated) --- */
-        footer {
-            padding: 100px 60px;
-            position: relative;
-            background: linear-gradient(180deg, transparent, rgba(123, 44, 191, 0.1));
-            overflow: hidden;
-        }
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      grid-template-rows: auto 1fr auto;
+      gap: 16px;
+    }
+    @media (max-width: 900px) {
+      .bento-grid { grid-template-columns: 1fr; }
+      .bento-video { grid-row: auto !important; }
+    }
+    .bento-video { grid-row: 1 / 4; }
 
-        .footer-content {
-            display: grid; grid-template-columns: 1fr 2fr; gap: 60px;
-            position: relative; z-index: 2;
-        }
+    /* glass card base */
+    .glass {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .glass:hover { border-color: rgba(255,255,255,0.14); }
 
-        .wave-container {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; opacity: 0.3; pointer-events: none;
-        }
+    /* ── VIDEO PANEL ── */
+    .video-chrome {
+      position: relative; border-radius: var(--radius); overflow: hidden;
+      border: 1px solid var(--border-glow);
+      box-shadow: var(--glow-cyan), inset 0 0 60px rgba(0,229,255,0.03);
+      animation: vglow 4s ease-in-out infinite;
+    }
+    @keyframes vglow {
+      0%,100% { box-shadow: 0 0 20px rgba(0,229,255,0.2), inset 0 0 40px rgba(0,229,255,0.02); }
+      50%      { box-shadow: 0 0 40px rgba(0,229,255,0.4), inset 0 0 60px rgba(0,229,255,0.05); }
+    }
+    .video-topbar {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 18px;
+      background: linear-gradient(to bottom, rgba(5,9,19,0.85), transparent);
+    }
+    .live-tag {
+      display: flex; align-items: center; gap: 7px;
+      background: rgba(255,77,109,0.9); color: #fff;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 2px;
+      padding: 4px 12px; border-radius: 4px;
+    }
+    .live-tag .lpip {
+      width: 6px; height: 6px; border-radius: 50%; background: #fff;
+      animation: pip 1s ease-in-out infinite;
+    }
+    .video-res { font-size: 0.72rem; color: rgba(255,255,255,0.5); letter-spacing: 1px; }
+    .video-feed {
+      display: block; width: 100%; height: auto;
+      border-radius: var(--radius);
+    }
+    .scan-line {
+      position: absolute; inset: 0; pointer-events: none; z-index: 10;
+      overflow: hidden;
+    }
+    .scan-line::after {
+      content: '';
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0.5; box-shadow: 0 0 12px var(--cyan);
+      animation: scan 4s linear infinite;
+    }
+    @keyframes scan { from { top: -2px; } to { top: 100%; } }
 
-        /* Mock SVG Wave Background */
-        .wave { animation: wave 10s cubic-bezier( 0.36, 0.45, 0.63, 0.53) infinite; transform: translate3d(0, 0, 0); }
-        @keyframes wave { 0% { margin-left: 0; } 100% { margin-left: -1600px; } }
-    </style>
+    /* ── SIDE PANELS ── */
+    .bento-mode {
+      grid-column: 2; grid-row: 1;
+      padding: 20px 22px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .panel-eyebrow {
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 2.5px;
+      color: var(--text-3); text-transform: uppercase;
+    }
+    .mode-badge {
+      font-family: var(--font-display);
+      font-size: 1.4rem; font-weight: 700;
+      color: var(--cyan);
+      text-shadow: 0 0 20px rgba(0,229,255,0.5);
+      letter-spacing: 1px;
+    }
+    .mode-desc { font-size: 0.78rem; color: var(--text-2); font-weight: 300; }
+
+    /* ── LEVELS PANEL ── */
+    .bento-levels {
+      grid-column: 2; grid-row: 2;
+      padding: 20px 22px;
+      display: flex; gap: 24px; align-items: flex-end;
+    }
+    .level-col {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .level-label {
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--text-3);
+    }
+    .level-track {
+      width: 38px; height: 130px; border-radius: 4px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .level-fill {
+      width: 100%; border-radius: 3px;
+      transition: height .4s cubic-bezier(.4,0,.2,1);
+      position: relative;
+    }
+    .level-fill.cyan-fill {
+      background: linear-gradient(to top, var(--cyan), rgba(0,229,255,0.3));
+      box-shadow: 0 -4px 16px rgba(0,229,255,0.5);
+    }
+    .level-fill.mint-fill {
+      background: linear-gradient(to top, var(--mint), rgba(0,255,195,0.3));
+      box-shadow: 0 -4px 16px rgba(0,255,195,0.5);
+    }
+    .level-pct {
+      font-family: var(--font-display); font-size: 0.85rem; font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ── CONTROLS PANEL ── */
+    .bento-controls {
+      grid-column: 2; grid-row: 3;
+      padding: 18px 22px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 11px 18px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface); color: var(--text-2);
+      font-family: var(--font-body); font-size: 0.82rem; font-weight: 500;
+      cursor: pointer; transition: all .25s; letter-spacing: 0.5px;
+    }
+    .btn:hover { background: var(--surface-hi); color: var(--text); border-color: rgba(255,255,255,0.2); }
+    .btn-clear { border-color: rgba(184,124,255,0.3); color: var(--purple); }
+    .btn-clear:hover { background: var(--purple-dim); border-color: var(--purple); }
+    .btn-danger { border-color: rgba(255,77,109,0.3); color: var(--red); }
+    .btn-danger:hover { background: var(--red-dim); border-color: var(--red); }
+
+    .globe-active-pill {
+      display: none; align-items: center; gap: 8px;
+      background: var(--mint-dim); border: 1px solid rgba(0,255,195,0.25);
+      border-radius: 8px; padding: 9px 14px;
+      font-size: 0.76rem; font-weight: 600; color: var(--mint); letter-spacing: 1px;
+    }
+    .globe-active-pill.show { display: flex; }
+    .gpip {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--mint); box-shadow: 0 0 8px var(--mint);
+      animation: pip 1.2s ease-in-out infinite;
+    }
+
+    /* ─────────────────────────────────────
+       GESTURE ATLAS
+    ───────────────────────────────────── */
+    .gesture-section { padding: 0 0 80px; }
+    .gesture-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .gesture-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 20px;
+      display: flex; align-items: center; gap: 16px;
+      transition: all .3s cubic-bezier(.4,0,.2,1);
+      position: relative; overflow: hidden; cursor: default;
+    }
+    .gesture-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px; border-radius: 2px 0 0 2px;
+      opacity: 0.7; transition: opacity .3s;
+    }
+    .gesture-card:hover {
+      transform: translateY(-3px);
+      background: var(--surface-hi);
+    }
+    .gesture-card:hover::before { opacity: 1; }
+
+    .gc-cyan::before   { background: var(--cyan); box-shadow: 2px 0 12px rgba(0,229,255,0.4); }
+    .gc-purple::before { background: var(--purple); box-shadow: 2px 0 12px rgba(184,124,255,0.4); }
+    .gc-mint::before   { background: var(--mint); box-shadow: 2px 0 12px rgba(0,255,195,0.4); }
+    .gc-orange::before { background: var(--orange); box-shadow: 2px 0 12px rgba(255,154,60,0.4); }
+    .gc-red::before    { background: var(--red); box-shadow: 2px 0 12px rgba(255,77,109,0.4); }
+
+    .gc-icon { font-size: 1.8rem; width: 44px; flex-shrink: 0; text-align: center; }
+    .gc-info { flex: 1; }
+    .gc-title {
+      font-family: var(--font-display); font-size: 0.92rem;
+      font-weight: 600; color: var(--text); margin-bottom: 3px;
+    }
+    .gc-desc { font-size: 0.77rem; color: var(--text-2); font-weight: 300; line-height: 1.4; }
+    .gc-tag {
+      font-size: 0.6rem; font-weight: 600; letter-spacing: 1.5px;
+      text-transform: uppercase; padding: 2px 8px; border-radius: 10px;
+      margin-top: 5px; display: inline-block;
+    }
+    .tag-cyan   { background: var(--cyan-dim);   color: var(--cyan);   border: 1px solid rgba(0,229,255,0.2); }
+    .tag-purple { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(184,124,255,0.2); }
+    .tag-mint   { background: var(--mint-dim);   color: var(--mint);   border: 1px solid rgba(0,255,195,0.2); }
+    .tag-orange { background: var(--orange-dim); color: var(--orange); border: 1px solid rgba(255,154,60,0.2); }
+    .tag-red    { background: var(--red-dim);    color: var(--red);    border: 1px solid rgba(255,77,109,0.2); }
+
+    /* ─────────────────────────────────────
+       NEW FEATURES SPOTLIGHT
+    ───────────────────────────────────── */
+    .features-section { padding: 0 0 80px; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 700px) { .features-grid { grid-template-columns: 1fr; } }
+
+    .feat-card {
+      border-radius: 20px; padding: 36px 34px;
+      position: relative; overflow: hidden;
+    }
+    .feat-card-draw {
+      background: linear-gradient(135deg, rgba(184,124,255,0.08) 0%, rgba(5,9,19,0) 60%);
+      border: 1px solid rgba(184,124,255,0.2);
+    }
+    .feat-card-globe {
+      background: linear-gradient(135deg, rgba(0,229,255,0.08) 0%, rgba(5,9,19,0) 60%);
+      border: 1px solid rgba(0,229,255,0.2);
+    }
+    .feat-badge {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; padding: 4px 12px; border-radius: 12px;
+      display: inline-block; margin-bottom: 18px;
+    }
+    .feat-card-draw .feat-badge { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(184,124,255,0.3); }
+    .feat-card-globe .feat-badge { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0,229,255,0.3); }
+    .feat-title {
+      font-family: var(--font-display); font-size: 1.7rem;
+      font-weight: 700; margin-bottom: 12px; line-height: 1.2;
+    }
+    .feat-card-draw .feat-title { color: var(--purple); }
+    .feat-card-globe .feat-title { color: var(--cyan); }
+    .feat-desc { font-size: 0.9rem; color: var(--text-2); font-weight: 300; line-height: 1.7; margin-bottom: 22px; }
+    .feat-steps { display: flex; flex-direction: column; gap: 10px; }
+    .feat-step {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 0.83rem; color: var(--text-2);
+    }
+    .step-num {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      display: grid; place-items: center;
+      font-family: var(--font-display); font-size: 0.65rem; font-weight: 700;
+    }
+    .feat-card-draw .step-num  { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(184,124,255,0.3); }
+    .feat-card-globe .step-num { background: var(--cyan-dim);   color: var(--cyan);   border: 1px solid rgba(0,229,255,0.3); }
+
+    /* CSS globe animation (decorative) */
+    .feat-decor {
+      position: absolute; right: 28px; top: 50%; transform: translateY(-50%);
+      pointer-events: none;
+    }
+    .css-globe {
+      width: 110px; height: 110px; border-radius: 50%;
+      border: 2px solid rgba(0,229,255,0.4);
+      position: relative;
+      box-shadow: 0 0 30px rgba(0,229,255,0.15), inset 0 0 30px rgba(0,229,255,0.05);
+      animation: globe-spin 12s linear infinite;
+    }
+    .css-globe::before, .css-globe::after {
+      content: ''; position: absolute; inset: 0; border-radius: 50%;
+      border: 1px solid rgba(0,229,255,0.25);
+    }
+    .css-globe::before { transform: rotateY(60deg); }
+    .css-globe::after  { transform: rotateX(60deg) rotateY(30deg); }
+    @keyframes globe-spin { from { transform: translateY(-50%) rotateY(0); } to { transform: translateY(-50%) rotateY(360deg); } }
+
+    .css-draw-decor {
+      position: absolute; right: 28px; top: 50%; transform: translateY(-50%);
+      pointer-events: none; opacity: 0.4;
+    }
+    .draw-path {
+      stroke-dasharray: 200;
+      stroke-dashoffset: 200;
+      animation: draw-path 3s ease-in-out infinite alternate;
+    }
+    @keyframes draw-path { from { stroke-dashoffset: 200; } to { stroke-dashoffset: 0; } }
+
+    /* ─────────────────────────────────────
+       TECH STACK PILLS
+    ───────────────────────────────────── */
+    .tech-section { padding: 0 0 80px; }
+    .tech-grid {
+      display: flex; gap: 12px; flex-wrap: wrap;
+    }
+    .tech-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 18px;
+      font-size: 0.82rem; font-weight: 500; color: var(--text-2);
+      transition: all .25s;
+    }
+    .tech-pill:hover {
+      background: var(--surface-hi); color: var(--text);
+      border-color: rgba(255,255,255,0.18);
+      transform: translateY(-2px);
+    }
+    .tech-pill .ti { font-size: 1.1rem; }
+
+    /* ─────────────────────────────────────
+       FOOTER
+    ───────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0;
+      position: relative;
+    }
+    footer::before {
+      content: '';
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 40%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      box-shadow: 0 0 20px var(--cyan);
+    }
+    .footer-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 20px;
+    }
+    .footer-name {
+      font-family: var(--font-display); font-size: 1rem; font-weight: 700;
+      color: var(--cyan);
+    }
+    .footer-meta {
+      font-size: 0.8rem; color: var(--text-2); font-weight: 300; margin-top: 4px;
+    }
+    .footer-copy {
+      font-size: 0.78rem; color: var(--text-3);
+    }
+    /* shutdown overlay */
+    .shutdown-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: #000; color: var(--cyan);
+      flex-direction: column; align-items: center; justify-content: center;
+      font-family: var(--font-display); text-align: center; gap: 16px;
+    }
+    .shutdown-overlay.show { display: flex; animation: fadein .8s ease; }
+    @keyframes fadein { from{opacity:0} to{opacity:1} }
+
+    /* divider */
+    .section-divider {
+      border: none; border-top: 1px solid var(--border);
+      margin: 60px 0;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="bg-wrapper"></div>
-    <div class="bg-overlay"></div>
+<!-- Grid overlay -->
+<div class="grid-overlay"></div>
 
-    <nav>
-        <div class="logo">GestureFlow</div>
-        <a href="#" class="dev-btn">
-            <div class="ping"></div> DEVELOPER PORTAL
+<!-- ══════════════════════════════════════════════════
+     LOADING SCREEN
+══════════════════════════════════════════════════ -->
+<div id="loader">
+  <div class="loader-logo" id="ll">◈ GESTUREFLOW</div>
+  <div class="loader-sub" id="ls">NEURAL ENGINE v6.0 — HAND GESTURE INTERFACE</div>
+  <div class="boot-lines" id="blk">
+    <div class="boot-line" id="b0"><span class="check" id="c0">✓</span> MEDIAPIPE HAND TRACKING ENGINE&hellip;</div>
+    <div class="boot-line" id="b1"><span class="check" id="c1">✓</span> OPENCV FRAME PROCESSOR&hellip;</div>
+    <div class="boot-line" id="b2"><span class="check" id="c2">✓</span> GESTURE STATE MACHINE&hellip;</div>
+    <div class="boot-line" id="b3"><span class="check" id="c3">✓</span> CANVAS DRAW ENGINE&hellip;</div>
+    <div class="boot-line" id="b4"><span class="check" id="c4">✓</span> HOLOGRAPHIC RENDER MODULE&hellip;</div>
+  </div>
+  <div class="loader-bar-wrap" id="lbw">
+    <div class="loader-bar-fill" id="lbf"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- ─── HEADER ─── -->
+  <header>
+    <div class="logo">
+      <div class="logo-mark">◈</div>
+      GestureFlow
+      <span class="logo-v">v6.0</span>
+    </div>
+    <div class="header-right">
+      <div class="status-pill">
+        <span class="status-pip"></span>
+        SYSTEM ONLINE
+      </div>
+      <div class="header-links">
+        <a href="https://github.com/saiyam-bajpai/Computer-Vision-based-Hand-Gesture-Control" target="_blank" title="GitHub">
+          <i class="fab fa-github"></i>
         </a>
-    </nav>
+        <a href="https://www.linkedin.com/in/saiyam-bajpai/" target="_blank" title="LinkedIn">
+          <i class="fab fa-linkedin"></i>
+        </a>
+      </div>
+    </div>
+  </header>
 
-    <section>
-        <div class="video-container">
-            <img src="/video_feed">
+  <!-- ─── HERO ─── -->
+  <section class="hero">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="wrap">
+      <div class="hero-tag">◈ Computer Vision · MediaPipe AI · Real-Time</div>
+      <h1>Control Space<br>With Your Hands</h1>
+      <p>Neural hand-gesture intelligence for hardware control, spatial drawing, and holographic interaction — no hardware required beyond a webcam.</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-val">21<span>pts</span></div>
+          <div class="hero-stat-label">landmarks tracked</div>
         </div>
-        <div style="margin-top: 50px; text-align: center;">
-            <p style="letter-spacing: 5px; opacity: 0.5; font-size: 0.8rem;">SCROLL TO INITIALIZE PROTOCOLS</p>
+        <div class="hero-stat">
+          <div class="hero-stat-val">9<span>+</span></div>
+          <div class="hero-stat-label">gesture commands</div>
         </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val">2<span>×</span></div>
+          <div class="hero-stat-label">hands · simultaneous</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val"><span>~</span>30<span>ms</span></div>
+          <div class="hero-stat-label">inference latency</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+
+    <!-- ─── LIVE INTERFACE ─── -->
+    <section class="interface-section">
+      <div class="section-eyebrow">Live Interface</div>
+      <div class="section-title">Neural Feed</div>
+      <div class="section-sub">Real-time hand landmark overlay with gesture state HUD</div>
+
+      <div class="bento-grid">
+        <!-- Video -->
+        <div class="bento-video">
+          <div class="video-chrome">
+            <div class="video-topbar">
+              <div class="live-tag"><span class="lpip"></span> LIVE</div>
+              <span class="video-res">HD 1280 × 720</span>
+            </div>
+            <div class="scan-line"></div>
+            <img src="/video_feed" alt="GestureFlow Live Feed" class="video-feed" />
+          </div>
+        </div>
+
+        <!-- Active Mode -->
+        <div class="bento-mode glass">
+          <div class="panel-eyebrow">Active Mode</div>
+          <div class="mode-badge" id="mode-display">SCANNING&hellip;</div>
+          <div class="mode-desc" id="mode-desc">Waiting for hand detection</div>
+        </div>
+
+        <!-- Level Meters -->
+        <div class="bento-levels glass">
+          <div class="level-col">
+            <div class="level-label">Volume</div>
+            <div class="level-track">
+              <div class="level-fill cyan-fill" id="vol-fill" style="height:0%"></div>
+            </div>
+            <div class="level-pct" id="vol-pct">0%</div>
+          </div>
+          <div style="width:1px; background:var(--border); align-self:stretch;"></div>
+          <div class="level-col">
+            <div class="level-label">Brightness</div>
+            <div class="level-track">
+              <div class="level-fill mint-fill" id="bri-fill" style="height:0%"></div>
+            </div>
+            <div class="level-pct" id="bri-pct">0%</div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="bento-controls glass">
+          <div class="globe-active-pill" id="globe-pill">
+            <span class="gpip"></span> HOLO-GLOBE ACTIVE
+          </div>
+          <button class="btn btn-clear" onclick="clearCanvas()">
+            <i class="fas fa-eraser"></i> Clear Drawing Canvas
+          </button>
+          <button class="btn btn-danger" onclick="initiateShutdown()">
+            <i class="fas fa-power-off"></i> Shutdown GestureFlow
+          </button>
+        </div>
+      </div>
     </section>
 
-    <section id="protocols">
-        <h2 class="protocol-title">Spatial Commands</h2>
-        <div class="feature-grid">
-            <div class="card">
-                <h3>Neon Ink</h3>
-                <p>Use Index and Middle fingers to leave a trail of digital light across the interface.</p>
-            </div>
-            <div class="card">
-                <h3>HCI Gravity</h3>
-                <p>A "Rock On" sign injects a system-level Spacebar trigger for media and gaming.</p>
-            </div>
-            <div class="card">
-                <h3>Level Sync</h3>
-                <p>Pinch and slide to master your environment—Volume on the left, Brightness on the right.</p>
-            </div>
+    <hr class="section-divider" />
+
+    <!-- ─── GESTURE ATLAS ─── -->
+    <section class="gesture-section">
+      <div class="section-eyebrow">Command Reference</div>
+      <div class="section-title">Gesture Atlas</div>
+      <div class="section-sub">All available hand gestures across every mode</div>
+
+      <div class="gesture-grid">
+
+        <!-- LEVEL MODE -->
+        <div class="gesture-card gc-cyan">
+          <div class="gc-icon">🔊</div>
+          <div class="gc-info">
+            <div class="gc-title">Volume Control</div>
+            <div class="gc-desc">Left hand · Middle finger UP · Pinch thumb + index to adjust system volume</div>
+            <span class="gc-tag tag-cyan">Level Mode</span>
+          </div>
         </div>
+        <div class="gesture-card gc-cyan">
+          <div class="gc-icon">🔆</div>
+          <div class="gc-info">
+            <div class="gc-title">Brightness</div>
+            <div class="gc-desc">Right hand · Middle finger UP · Pinch thumb + index to adjust screen brightness</div>
+            <span class="gc-tag tag-cyan">Level Mode</span>
+          </div>
+        </div>
+
+        <!-- NAVIGATION -->
+        <div class="gesture-card gc-mint">
+          <div class="gc-icon">⏩</div>
+          <div class="gc-info">
+            <div class="gc-title">Forward</div>
+            <div class="gc-desc">Right hand · Index UP only · Middle finger DOWN · Sends → arrow key</div>
+            <span class="gc-tag tag-mint">Nav Mode</span>
+          </div>
+        </div>
+        <div class="gesture-card gc-mint">
+          <div class="gc-icon">⏪</div>
+          <div class="gc-info">
+            <div class="gc-title">Backward</div>
+            <div class="gc-desc">Left hand · Index UP only · Middle finger DOWN · Sends ← arrow key</div>
+            <span class="gc-tag tag-mint">Nav Mode</span>
+          </div>
+        </div>
+
+        <!-- SYSTEM -->
+        <div class="gesture-card gc-red">
+          <div class="gc-icon">✊</div>
+          <div class="gc-info">
+            <div class="gc-title">Mute System</div>
+            <div class="gc-desc">Closed fist · All four fingers down · Thumb visible · Instantly mutes audio</div>
+            <span class="gc-tag tag-red">System</span>
+          </div>
+        </div>
+        <div class="gesture-card gc-orange">
+          <div class="gc-icon">🖥️</div>
+          <div class="gc-info">
+            <div class="gc-title">Show Desktop</div>
+            <div class="gc-desc">Fist with thumb tucked inward · Triggers Win + D to reveal the desktop</div>
+            <span class="gc-tag tag-orange">System</span>
+          </div>
+        </div>
+
+        <!-- DRAW MODE -->
+        <div class="gesture-card gc-purple">
+          <div class="gc-icon">✍️</div>
+          <div class="gc-info">
+            <div class="gc-title">Draw Mode</div>
+            <div class="gc-desc">Ring + Pinky UP · Index + Middle DOWN · Index tip becomes a neon drawing cursor</div>
+            <span class="gc-tag tag-purple">Draw Mode</span>
+          </div>
+        </div>
+        <div class="gesture-card gc-purple">
+          <div class="gc-icon">🎨</div>
+          <div class="gc-info">
+            <div class="gc-title">Color Cycling</div>
+            <div class="gc-desc">Color auto-cycles: cyan → magenta → neon green → orange → violet, every 60 pts drawn</div>
+            <span class="gc-tag tag-purple">Draw Mode</span>
+          </div>
+        </div>
+
+        <!-- GLOBE -->
+        <div class="gesture-card gc-cyan">
+          <div class="gc-icon">⭕</div>
+          <div class="gc-info">
+            <div class="gc-title">Spawn Holo-Globe</div>
+            <div class="gc-desc">While in Draw Mode, trace a rough circle. Canvas detects the shape and spawns a holographic globe</div>
+            <span class="gc-tag tag-cyan">Holo-Globe</span>
+          </div>
+        </div>
+        <div class="gesture-card gc-cyan">
+          <div class="gc-icon">🌐</div>
+          <div class="gc-info">
+            <div class="gc-title">Move Globe</div>
+            <div class="gc-desc">Open palm near the globe · Globe follows your hand · All other gestures are paused · Disappears after 4s untouched</div>
+            <span class="gc-tag tag-cyan">Holo-Globe</span>
+          </div>
+        </div>
+
+      </div>
     </section>
 
-    <section>
-        <h2 style="font-family: 'Cormorant Garamond'; font-size: 4rem; font-style: italic;">Next-Gen Features</h2>
-        <div class="feature-grid">
-            <div class="card">
-                <span style="font-size: 2.5rem;">🧠</span>
-                <h3>Neural Mapping</h3>
-                <p>Adaptive hand tracking that learns your specific skeletal structure over time.</p>
-            </div>
-            <div class="card">
-                <span style="font-size: 2.5rem;">⚡</span>
-                <h3>Zero Latency</h3>
-                <p>Optimized C++ back-threaded processing for sub-10ms response times.</p>
-            </div>
-            <div class="card">
-                <span style="font-size: 2.5rem;">🎨</span>
-                <h3>Visual Feedback</h3>
-                <p>On-screen particle effects that react to the speed and velocity of your gestures.</p>
-            </div>
-        </div>
-    </section>
+    <hr class="section-divider" />
 
-    <footer>
-        <div class="footer-content">
-            <div class="logo" style="font-size: 4rem;">GestureFlow</div>
-            <div>
-                <p style="font-size: 1.4rem; color: var(--primary); font-weight: 500;">Architecture by Saiyam Bajpai</p>
-                <p style="opacity: 0.6; line-height: 1.8; max-width: 600px;">
-                    Saiyam Bajpai is a student at the intersection of Design and Data Science. 
-                    He is currently pursuing his B.Tech in Computer Science & Design at MITS Gwalior 
-                    and a BS in Data Science at IIT Madras. This project is a testament to the future 
-                    of Human-Computer Interaction.
-                </p>
-                <div style="margin-top: 30px; display: flex; gap: 20px; font-size: 0.7rem; letter-spacing: 2px;">
-                    <span>PYTHON / FLASK</span> <span>MEDIAPIPE</span> <span>OPEN CV</span>
-                </div>
-            </div>
-        </div>
-        <div class="wave-container">
-            <svg viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto" style="width: 100%; height: 100px;">
-                <defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" /></defs>
-                <g class="wave">
-                    <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(0, 240, 255, 0.1)" />
-                    <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255, 0, 110, 0.1)" />
-                </g>
+    <!-- ─── NEW FEATURES SPOTLIGHT ─── -->
+    <section class="features-section">
+      <div class="section-eyebrow">New in v6.0</div>
+      <div class="section-title">Spatial Features</div>
+      <div class="section-sub">Drawing and holographic interaction layered on top of the original gesture engine</div>
+
+      <div class="features-grid">
+
+        <!-- Draw Mode card -->
+        <div class="feat-card feat-card-draw glass">
+          <div class="css-draw-decor">
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+              <path class="draw-path" d="M20 80 Q30 20 50 50 Q70 80 80 20"
+                stroke="#b87cff" stroke-width="3" stroke-linecap="round" fill="none"/>
+              <circle cx="80" cy="20" r="5" fill="#b87cff" opacity="0.6"/>
             </svg>
+          </div>
+          <span class="feat-badge">✦ New Feature</span>
+          <div class="feat-title">Spatial Canvas</div>
+          <div class="feat-desc">Draw glowing neon strokes directly onto your live camera feed using nothing but your fingers. The canvas persists until you clear it.</div>
+          <div class="feat-steps">
+            <div class="feat-step"><span class="step-num">1</span> Raise ring finger + pinky only to enter draw mode</div>
+            <div class="feat-step"><span class="step-num">2</span> Move your index fingertip to paint neon trails</div>
+            <div class="feat-step"><span class="step-num">3</span> Color auto-cycles through 5 vivid neon hues</div>
+            <div class="feat-step"><span class="step-num">4</span> Lower your hand or change gesture to stop drawing</div>
+          </div>
         </div>
-    </footer>
 
-    <script>
-        gsap.registerPlugin(ScrollTrigger);
-        
-        // Feature card reveal
-        gsap.from(".card", {
-            scrollTrigger: { trigger: ".feature-grid", start: "top 80%" },
-            y: 50, opacity: 0, stagger: 0.2, duration: 1, ease: "power4.out"
-        });
+        <!-- HoloGlobe card -->
+        <div class="feat-card feat-card-globe glass">
+          <div class="feat-decor">
+            <div class="css-globe"></div>
+          </div>
+          <span class="feat-badge">✦ New Feature</span>
+          <div class="feat-title">Holo-Globe</div>
+          <div class="feat-desc">Draw a circle in draw mode and watch it transform into an interactive holographic globe you can physically move with your palm.</div>
+          <div class="feat-steps">
+            <div class="feat-step"><span class="step-num">1</span> Enter draw mode and trace a rough circle</div>
+            <div class="feat-step"><span class="step-num">2</span> Globe spawns at your circle's centre — all gestures pause</div>
+            <div class="feat-step"><span class="step-num">3</span> Hold palm near the globe to drag it across the screen</div>
+            <div class="feat-step"><span class="step-num">4</span> Globe dissolves after 4 s of no interaction, gestures resume</div>
+          </div>
+        </div>
 
-        // Wavy text animation
-        gsap.from(".protocol-title", {
-            scrollTrigger: { trigger: ".protocol-title", start: "top 90%" },
-            x: -100, opacity: 0, duration: 1.5, ease: "expo.out"
-        });
-    </script>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- ─── TECH STACK ─── -->
+    <section class="tech-section">
+      <div class="section-eyebrow">Built With</div>
+      <div class="section-title">Tech Stack</div>
+      <div style="margin-bottom:24px"></div>
+      <div class="tech-grid">
+        <div class="tech-pill"><span class="ti">🐍</span> Python 3</div>
+        <div class="tech-pill"><span class="ti">⚗️</span> Flask</div>
+        <div class="tech-pill"><span class="ti">👁️</span> OpenCV</div>
+        <div class="tech-pill"><span class="ti">🖐️</span> MediaPipe</div>
+        <div class="tech-pill"><span class="ti">🔊</span> pycaw</div>
+        <div class="tech-pill"><span class="ti">💡</span> screen-brightness-control</div>
+        <div class="tech-pill"><span class="ti">🖱️</span> pyautogui</div>
+        <div class="tech-pill"><span class="ti">🔢</span> NumPy</div>
+        <div class="tech-pill"><span class="ti">🎨</span> HTML5 / CSS3 / JS</div>
+      </div>
+    </section>
+
+  </div><!-- /wrap -->
+
+  <!-- ─── FOOTER ─── -->
+  <footer>
+    <div class="wrap">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-name">Saiyam Bajpai</div>
+          <div class="footer-meta">
+            B.Tech in Computer Science &amp; Design · MITS Gwalior<br>
+            BS in Data Science · IIT Madras
+          </div>
+        </div>
+        <div class="footer-copy">
+          &copy; 2025 GestureFlow Industries &nbsp;·&nbsp; v6.0.0 &nbsp;·&nbsp; All Systems Nominal
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div><!-- /app -->
+
+<!-- Shutdown overlay -->
+<div class="shutdown-overlay" id="shutdownOverlay">
+  <div style="font-family:var(--font-display);font-size:2.5rem;font-weight:800;letter-spacing:4px;color:var(--red);">SYSTEM OFFLINE</div>
+  <div style="color:var(--text-2);font-size:0.95rem;font-weight:300;margin-top:8px;">Connection terminated. You may close this window.</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════════ -->
+<script>
+/* ── LOADING SEQUENCE (GSAP) ── */
+window.addEventListener('DOMContentLoaded', () => {
+  const tl = gsap.timeline({ onComplete: revealApp });
+
+  tl.to('#ll',  { opacity: 1, duration: 0.6, ease: 'power2.out' })
+    .to('#ls',  { opacity: 1, duration: 0.4, ease: 'power2.out' }, '-=0.2')
+    .to('#blk', { opacity: 1, duration: 0.3 }, '+=0.1')
+    .to('#lbw', { opacity: 1, duration: 0.3 });
+
+  // boot lines appear one by one
+  const boots = ['b0','b1','b2','b3','b4'];
+  const checks = ['c0','c1','c2','c3','c4'];
+  const bar = document.getElementById('lbf');
+
+  boots.forEach((id, i) => {
+    const delay = 0.9 + i * 0.35;
+    tl.to(`#${id}`, { opacity: 1, duration: 0.25 }, delay)
+      .to(`#${id}`, { color: 'var(--mint)', duration: 0.2 }, delay + 0.2)
+      .to(`#${checks[i]}`, { opacity: 1, duration: 0.15 }, delay + 0.25)
+      .to(bar, { width: `${(i + 1) * 20}%`, duration: 0.3, ease: 'power1.out' }, delay + 0.1);
+  });
+
+  // Stagger one final beat then fade out
+  tl.to('#loader', { opacity: 0, duration: 0.7, delay: 0.4, ease: 'power2.inOut' });
+
+  function revealApp() {
+    document.getElementById('loader').style.display = 'none';
+    gsap.to('#app', { opacity: 1, duration: 0.8, ease: 'power2.out' });
+  }
+});
+
+/* ── STATUS POLLING ── */
+const modeDescMap = {
+  'IDLE':      'Waiting for hand detection',
+  'DRAW':      'Drawing on canvas with index fingertip',
+  'GLOBE':     'Holographic globe active — all gestures paused',
+  'MUTE':      'System audio muted',
+  'LEVEL — VOL': 'Adjusting system volume',
+  'LEVEL — BRI': 'Adjusting screen brightness',
+  'NAV — FWD': 'Sending → arrow key',
+  'NAV — BWD': 'Sending ← arrow key',
+  'WIN+D':     'Showing desktop (Win + D)',
+};
+const modeColorMap = {
+  'DRAW':      'var(--purple)',
+  'GLOBE':     'var(--cyan)',
+  'MUTE':      'var(--red)',
+  'LEVEL — VOL':'var(--cyan)',
+  'LEVEL — BRI':'var(--mint)',
+  'NAV — FWD': 'var(--mint)',
+  'NAV — BWD': 'var(--mint)',
+  'WIN+D':     'var(--orange)',
+  'IDLE':      'var(--text-2)',
+};
+
+async function pollStatus() {
+  try {
+    const res  = await fetch('/status');
+    const data = await res.json();
+
+    // mode display
+    const mode = data.mode || 'IDLE';
+    const modeEl = document.getElementById('mode-display');
+    const descEl = document.getElementById('mode-desc');
+    modeEl.textContent = mode;
+    modeEl.style.color = modeColorMap[mode] || 'var(--text-2)';
+    modeEl.style.textShadow = `0 0 20px ${modeColorMap[mode] || 'transparent'}`;
+    descEl.textContent = modeDescMap[mode] || '';
+
+    // volume bar
+    const vol = Math.min(100, Math.max(0, data.volume || 0));
+    document.getElementById('vol-fill').style.height = vol + '%';
+    document.getElementById('vol-pct').textContent   = vol + '%';
+
+    // brightness bar
+    const bri = Math.min(100, Math.max(0, data.brightness || 0));
+    document.getElementById('bri-fill').style.height = bri + '%';
+    document.getElementById('bri-pct').textContent   = bri + '%';
+
+    // globe pill
+    const globePill = document.getElementById('globe-pill');
+    if (data.globe) {
+      globePill.classList.add('show');
+    } else {
+      globePill.classList.remove('show');
+    }
+  } catch (e) {
+    /* server not reachable — do nothing */
+  }
+}
+setInterval(pollStatus, 900);
+pollStatus();
+
+/* ── CLEAR CANVAS ── */
+async function clearCanvas() {
+  try {
+    await fetch('/clear_canvas', { method: 'POST' });
+    // Brief visual feedback
+    const btn = event.currentTarget;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i> Canvas Cleared';
+    btn.style.color = 'var(--mint)';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 1800);
+  } catch (e) { console.log('clear_canvas failed:', e); }
+}
+
+/* ── SHUTDOWN ── */
+async function initiateShutdown() {
+  if (!confirm('Terminate GestureFlow?\nThis will stop the Python server.')) return;
+  try {
+    await fetch('/shutdown', { method: 'POST' });
+  } catch (e) { /* expected — server closes */ }
+  document.getElementById('shutdownOverlay').classList.add('show');
+}
+</script>
+
 </body>
 </html>
