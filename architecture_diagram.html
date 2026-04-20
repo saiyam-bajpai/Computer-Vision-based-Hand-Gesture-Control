@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>GestureFlow — System Architecture</title>
+<style>
+  body { margin: 0; background: #f8f9fa; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: sans-serif; }
+  svg { max-width: 100%; height: auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.10); }
+  .btn { margin: 16px auto; display: block; padding: 10px 28px; background: #1a1a2e; color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; }
+  @media print { .btn { display: none; } }
+</style>
+</head>
+<body>
+<div style="padding:24px; width:100%; max-width:1000px;">
+  <button class="btn" onclick="window.print()">🖨 Print / Save as PDF</button>
+<svg viewBox="0 0 900 680" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr"   markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#888"/></marker>
+    <marker id="arr-b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#3a7bd5"/></marker>
+    <marker id="arr-p" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#7a4aaa"/></marker>
+    <marker id="arr-o" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#c47a20"/></marker>
+    <marker id="arr-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3z" fill="#2a8a50"/></marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="680" rx="14" fill="#f0f2f8"/>
+
+  <!-- Title -->
+  <text x="450" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#1a1a2e" font-family="sans-serif">GestureFlow — System Architecture Diagram</text>
+  <text x="450" y="52" text-anchor="middle" font-size="11" fill="#666" font-family="sans-serif">End-to-end data flow · Real-time gesture pipeline</text>
+
+  <!-- ══ LAYER 1: HARDWARE ══ -->
+  <rect x="16" y="64" width="868" height="86" rx="8" fill="#eaf1fb" stroke="#a8c4e8" stroke-width="1"/>
+  <text x="28" y="79" font-size="9" font-weight="700" fill="#3a6ea8" font-family="sans-serif" letter-spacing="1.2">HARDWARE LAYER</text>
+
+  <!-- Webcam -->
+  <rect x="36" y="86" width="118" height="52" rx="6" fill="#fff" stroke="#4a7ab8" stroke-width="1.5"/>
+  <text x="95" y="107" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a2e" font-family="sans-serif">Webcam</text>
+  <text x="95" y="122" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">1280×720 · 30 fps</text>
+
+  <line x1="154" y1="112" x2="194" y2="112" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- OpenCV Capture -->
+  <rect x="196" y="86" width="140" height="52" rx="6" fill="#fff" stroke="#4a7ab8" stroke-width="1.5"/>
+  <text x="266" y="107" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a2e" font-family="sans-serif">OpenCV Capture</text>
+  <text x="266" y="122" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">VideoCapture · flip · BGR</text>
+
+  <line x1="336" y1="112" x2="376" y2="112" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Colour convert -->
+  <rect x="378" y="86" width="132" height="52" rx="6" fill="#fff" stroke="#4a7ab8" stroke-width="1.5"/>
+  <text x="444" y="107" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a2e" font-family="sans-serif">Colour Convert</text>
+  <text x="444" y="122" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">BGR → RGB (cv2)</text>
+
+  <line x1="510" y1="112" x2="550" y2="112" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Raw frame buffer -->
+  <rect x="552" y="86" width="160" height="52" rx="6" fill="#fff" stroke="#4a7ab8" stroke-width="1.5"/>
+  <text x="632" y="107" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a2e" font-family="sans-serif">Frame Buffer</text>
+  <text x="632" y="122" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">NumPy H×W×3 array</text>
+
+  <!-- ══ LAYER 2: PYTHON BACKEND ══ -->
+  <rect x="16" y="162" width="868" height="254" rx="8" fill="#eef0fa" stroke="#aab0d8" stroke-width="1"/>
+  <text x="28" y="177" font-size="9" font-weight="700" fill="#3a3aaa" font-family="sans-serif" letter-spacing="1.2">PYTHON BACKEND — FLASK + OpenCV + MediaPipe</text>
+
+  <!-- dashed feed line from hardware into mediapipe -->
+  <line x1="632" y1="138" x2="632" y2="154" stroke="#888" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="632" y1="154" x2="108" y2="154" stroke="#888" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="108" y1="154" x2="108" y2="185" stroke="#888" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+  <!-- MediaPipe Hands -->
+  <rect x="36" y="187" width="148" height="66" rx="6" fill="#fff" stroke="#3a7bd5" stroke-width="1.8"/>
+  <text x="110" y="208" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a2e" font-family="sans-serif">MediaPipe Hands</text>
+  <text x="110" y="223" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">Palm detector model</text>
+  <text x="110" y="237" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">21-landmark regressor</text>
+
+  <line x1="184" y1="220" x2="224" y2="220" stroke="#3a7bd5" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+  <!-- Landmark Extraction -->
+  <rect x="226" y="187" width="148" height="66" rx="6" fill="#fff" stroke="#3a7bd5" stroke-width="1.8"/>
+  <text x="300" y="208" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a2e" font-family="sans-serif">Landmark Extractor</text>
+  <text x="300" y="223" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">lm_list [id, x, y]</text>
+  <text x="300" y="237" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">Handedness (L / R)</text>
+
+  <line x1="374" y1="220" x2="414" y2="220" stroke="#3a7bd5" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+  <!-- Finger State Flags -->
+  <rect x="416" y="187" width="148" height="66" rx="6" fill="#fff" stroke="#3a7bd5" stroke-width="1.8"/>
+  <text x="490" y="208" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a2e" font-family="sans-serif">Finger State Flags</text>
+  <text x="490" y="223" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">tip.y &lt; PIP.y → up</text>
+  <text x="490" y="237" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">up_count · thumb flag</text>
+
+  <line x1="564" y1="220" x2="604" y2="220" stroke="#3a7bd5" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+  <!-- Gesture State Machine -->
+  <rect x="606" y="181" width="200" height="78" rx="6" fill="#e8e0f8" stroke="#6a3ab5" stroke-width="2"/>
+  <text x="706" y="202" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a2e" font-family="sans-serif">Gesture State Machine</text>
+  <text x="706" y="218" text-anchor="middle" font-size="9.5" fill="#444" font-family="sans-serif">Priority: Globe → Draw → Standard</text>
+  <text x="706" y="232" text-anchor="middle" font-size="9.5" fill="#444" font-family="sans-serif">10 states · key_delay debounce</text>
+  <text x="706" y="246" text-anchor="middle" font-size="9.5" fill="#444" font-family="sans-serif">Handedness-aware (L/R split)</text>
+
+  <!-- State machine to sub-systems (dispatch arrows) -->
+  <line x1="660" y1="259" x2="112" y2="297" stroke="#7a4aaa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-p)"/>
+  <line x1="675" y1="259" x2="276" y2="297" stroke="#7a4aaa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-p)"/>
+  <line x1="706" y1="259" x2="444" y2="297" stroke="#7a4aaa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-p)"/>
+  <line x1="740" y1="259" x2="608" y2="297" stroke="#7a4aaa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-p)"/>
+  <line x1="760" y1="259" x2="760" y2="297" stroke="#7a4aaa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-p)"/>
+
+  <!-- Sub-systems row -->
+  <!-- Canvas Engine -->
+  <rect x="36" y="299" width="154" height="100" rx="6" fill="#fff" stroke="#7a4aaa" stroke-width="1.5"/>
+  <text x="113" y="320" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a1a2e" font-family="sans-serif">Canvas Engine</text>
+  <text x="113" y="335" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">NumPy zeros overlay</text>
+  <text x="113" y="349" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">addWeighted α=0.88</text>
+  <text x="113" y="363" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Dual-line neon stroke</text>
+  <text x="113" y="377" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">5 colour cycling palette</text>
+  <text x="113" y="391" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Thread-safe canvas_lock</text>
+
+  <!-- Circle Detector -->
+  <rect x="204" y="299" width="154" height="100" rx="6" fill="#fff" stroke="#7a4aaa" stroke-width="1.5"/>
+  <text x="281" y="320" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a1a2e" font-family="sans-serif">Circle Detector</text>
+  <text x="281" y="335" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">≥25 path points</text>
+  <text x="281" y="349" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Mean radius ≥ 30px</text>
+  <text x="281" y="363" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Roundness σ/μ &lt; 0.40</text>
+  <text x="281" y="377" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Closure &lt; 1.8 × r</text>
+  <text x="281" y="391" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Returns centroid · radius</text>
+
+  <line x1="358" y1="349" x2="374" y2="349" stroke="#7a4aaa" stroke-width="1.2" marker-end="url(#arr-p)"/>
+
+  <!-- Holo-Globe Renderer -->
+  <rect x="376" y="299" width="154" height="100" rx="6" fill="#fff" stroke="#7a4aaa" stroke-width="1.5"/>
+  <text x="453" y="320" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a1a2e" font-family="sans-serif">Holo-Globe Renderer</text>
+  <text x="453" y="335" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Latitude ellipses ×5</text>
+  <text x="453" y="349" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Longitude arcs (anim)</text>
+  <text x="453" y="363" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Horizontal scan line</text>
+  <text x="453" y="377" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">alpha fade 0→1→0</text>
+  <text x="453" y="391" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">4s timeout · palm drag</text>
+
+  <!-- HUD Overlay -->
+  <rect x="546" y="299" width="134" height="100" rx="6" fill="#fff" stroke="#7a4aaa" stroke-width="1.5"/>
+  <text x="613" y="320" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a1a2e" font-family="sans-serif">HUD Overlay</text>
+  <text x="613" y="335" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Vol / Bri bars</text>
+  <text x="613" y="349" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Mode label text</text>
+  <text x="613" y="363" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Gesture feedback text</text>
+  <text x="613" y="377" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Landmark skeleton</text>
+
+  <!-- MJPEG Encoder -->
+  <rect x="696" y="299" width="140" height="100" rx="6" fill="#fff" stroke="#7a4aaa" stroke-width="1.5"/>
+  <text x="766" y="320" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a1a2e" font-family="sans-serif">MJPEG Encoder</text>
+  <text x="766" y="335" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">imencode('.jpg')</text>
+  <text x="766" y="349" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">quality = 85</text>
+  <text x="766" y="363" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">multipart/x-mixed-replace</text>
+  <text x="766" y="377" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Generator · yield chunk</text>
+
+  <!-- ══ LAYER 3: SYSTEM APIS ══ -->
+  <rect x="16" y="428" width="868" height="106" rx="8" fill="#fef6e8" stroke="#d9a84a" stroke-width="1"/>
+  <text x="28" y="443" font-size="9" font-weight="700" fill="#a07020" font-family="sans-serif" letter-spacing="1.2">SYSTEM API LAYER</text>
+
+  <!-- pycaw -->
+  <rect x="36" y="452" width="148" height="68" rx="6" fill="#fff" stroke="#c47a20" stroke-width="1.5"/>
+  <text x="110" y="473" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a2e" font-family="sans-serif">pycaw</text>
+  <text x="110" y="489" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">Windows Core Audio API</text>
+  <text x="110" y="505" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">SetMasterVolumeLevelScalar</text>
+
+  <!-- sbc -->
+  <rect x="210" y="452" width="148" height="68" rx="6" fill="#fff" stroke="#c47a20" stroke-width="1.5"/>
+  <text x="284" y="473" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a2e" font-family="sans-serif">sbc</text>
+  <text x="284" y="489" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">screen-brightness-control</text>
+  <text x="284" y="505" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">set_brightness(int)</text>
+
+  <!-- pyautogui -->
+  <rect x="384" y="452" width="148" height="68" rx="6" fill="#fff" stroke="#c47a20" stroke-width="1.5"/>
+  <text x="458" y="473" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a2e" font-family="sans-serif">pyautogui</text>
+  <text x="458" y="489" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">press() · hotkey()</text>
+  <text x="458" y="505" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">← → space  Win+D</text>
+
+  <!-- Flask Routes -->
+  <rect x="558" y="452" width="180" height="68" rx="6" fill="#fff" stroke="#c47a20" stroke-width="1.5"/>
+  <text x="648" y="473" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a2e" font-family="sans-serif">Flask HTTP Routes</text>
+  <text x="648" y="489" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">/  /video_feed  /status</text>
+  <text x="648" y="505" text-anchor="middle" font-size="9.5" fill="#555" font-family="sans-serif">/clear_canvas  /shutdown</text>
+
+  <!-- Sub-system → API arrows -->
+  <line x1="113" y1="399" x2="113" y2="450" stroke="#c47a20" stroke-width="1.4" marker-end="url(#arr-o)"/>
+  <line x1="284" y1="399" x2="284" y2="450" stroke="#c47a20" stroke-width="1.4" marker-end="url(#arr-o)"/>
+  <line x1="458" y1="399" x2="458" y2="450" stroke="#c47a20" stroke-width="1.4" marker-end="url(#arr-o)"/>
+  <line x1="766" y1="399" x2="648" y2="450" stroke="#c47a20" stroke-width="1.4" marker-end="url(#arr-o)"/>
+
+  <!-- ══ LAYER 4: FRONTEND ══ -->
+  <rect x="16" y="546" width="868" height="120" rx="8" fill="#e8f7ee" stroke="#5aaa7a" stroke-width="1"/>
+  <text x="28" y="561" font-size="9" font-weight="700" fill="#2a7a48" font-family="sans-serif" letter-spacing="1.2">FRONTEND LAYER — BROWSER (HTML / CSS / JS)</text>
+
+  <!-- Browser img -->
+  <rect x="36" y="568" width="148" height="82" rx="6" fill="#fff" stroke="#2a8a50" stroke-width="1.5"/>
+  <text x="110" y="589" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a1a2e" font-family="sans-serif">Video Display</text>
+  <text x="110" y="605" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">&lt;img src="/video_feed"&gt;</text>
+  <text x="110" y="619" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">MJPEG live stream</text>
+  <text x="110" y="633" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">scan-line CSS overlay</text>
+
+  <!-- JS Poll -->
+  <rect x="210" y="568" width="148" height="82" rx="6" fill="#fff" stroke="#2a8a50" stroke-width="1.5"/>
+  <text x="284" y="589" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a1a2e" font-family="sans-serif">JS Status Polling</text>
+  <text x="284" y="605" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">fetch('/status') 900ms</text>
+  <text x="284" y="619" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">mode · vol · bri · globe</text>
+  <text x="284" y="633" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">DOM update no reload</text>
+
+  <!-- Bento UI -->
+  <rect x="384" y="568" width="148" height="82" rx="6" fill="#fff" stroke="#2a8a50" stroke-width="1.5"/>
+  <text x="458" y="589" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a1a2e" font-family="sans-serif">Bento UI</text>
+  <text x="458" y="605" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Mode badge · Level bars</text>
+  <text x="458" y="619" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Gesture atlas cards</text>
+  <text x="458" y="633" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Globe active pill</text>
+
+  <!-- GSAP -->
+  <rect x="558" y="568" width="148" height="82" rx="6" fill="#fff" stroke="#2a8a50" stroke-width="1.5"/>
+  <text x="632" y="589" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a1a2e" font-family="sans-serif">GSAP Loader</text>
+  <text x="632" y="605" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">5-stage boot sequence</text>
+  <text x="632" y="619" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Progress bar timeline</text>
+  <text x="632" y="633" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Fade-in reveal</text>
+
+  <!-- Design -->
+  <rect x="732" y="568" width="140" height="82" rx="6" fill="#fff" stroke="#2a8a50" stroke-width="1.5"/>
+  <text x="802" y="589" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a1a2e" font-family="sans-serif">Glassmorphism UI</text>
+  <text x="802" y="605" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Syne + DM Sans fonts</text>
+  <text x="802" y="619" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Ambient orbs · CSS grid</text>
+  <text x="802" y="633" text-anchor="middle" font-size="9" fill="#555" font-family="sans-serif">Dark glassmorphism</text>
+
+  <!-- Flask → Frontend arrows -->
+  <line x1="648" y1="520" x2="110" y2="566" stroke="#2a8a50" stroke-width="1.4" marker-end="url(#arr-g)"/>
+  <line x1="648" y1="520" x2="284" y2="566" stroke="#2a8a50" stroke-width="1.4" marker-end="url(#arr-g)"/>
+  <line x1="648" y1="520" x2="458" y2="566" stroke="#2a8a50" stroke-width="1.4" marker-end="url(#arr-g)"/>
+  <line x1="648" y1="520" x2="632" y2="566" stroke="#2a8a50" stroke-width="1.4" marker-end="url(#arr-g)"/>
+  <line x1="648" y1="520" x2="802" y2="566" stroke="#2a8a50" stroke-width="1.4" marker-end="url(#arr-g)"/>
+
+  <!-- LEGEND -->
+  <rect x="756" y="452" width="128" height="90" rx="6" fill="#fff" stroke="#ccc" stroke-width="1"/>
+  <text x="820" y="468" text-anchor="middle" font-size="9" font-weight="700" fill="#555" font-family="sans-serif" letter-spacing="1">LEGEND</text>
+  <line x1="766" y1="479" x2="796" y2="479" stroke="#888" stroke-width="2"/>
+  <text x="802" y="483" font-size="9" fill="#555" font-family="sans-serif">Frame flow</text>
+  <line x1="766" y1="493" x2="796" y2="493" stroke="#3a7bd5" stroke-width="2"/>
+  <text x="802" y="497" font-size="9" fill="#555" font-family="sans-serif">Landmark data</text>
+  <line x1="766" y1="507" x2="796" y2="507" stroke="#7a4aaa" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="802" y="511" font-size="9" fill="#555" font-family="sans-serif">Dispatch</text>
+  <line x1="766" y1="521" x2="796" y2="521" stroke="#c47a20" stroke-width="2"/>
+  <text x="802" y="525" font-size="9" fill="#555" font-family="sans-serif">API call</text>
+  <line x1="766" y1="535" x2="796" y2="535" stroke="#2a8a50" stroke-width="2"/>
+  <text x="802" y="539" font-size="9" fill="#555" font-family="sans-serif">HTTP response</text>
+</svg>
+</div>
+</body>
+</html>
