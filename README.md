@@ -1,122 +1,206 @@
-# 🖐️ GestureFlow v5.0: The Web-AI Interface
-### *A B.Tech CSD(Computer Science & Design) 1st Year Project in Human-Computer Interaction*
+# 🖐️ GestureFlow v6.0: Neural Gesture Interface
+### *A B.Tech CSD (Computer Science & Design) Micro Project — Human-Computer Interaction*
 
 ![Python](https://img.shields.io/badge/Made%20with-Python-blue?style=for-the-badge&logo=python)
 ![MediaPipe](https://img.shields.io/badge/AI-MediaPipe-brightgreen?style=for-the-badge)
 ![Flask](https://img.shields.io/badge/Framework-Flask-lightgrey?style=for-the-badge&logo=flask)
-![Status](https://img.shields.io/badge/Status-Version_5.0_Web-blueviolet?style=for-the-badge)
+![OpenCV](https://img.shields.io/badge/Vision-OpenCV-red?style=for-the-badge&logo=opencv)
+![Status](https://img.shields.io/badge/Status-Version_6.0_Spatial-blueviolet?style=for-the-badge)
+
+---
 
 ## 🌟 The Story Behind the Project
-As a first-year student, I wanted to build something that felt like it belonged in a sci-fi movie. I noticed that most gesture controllers are "messy"—if you try to skip a song, you accidentally change the volume too. 
 
-In this final **Version 5.0**, I broke out of the local terminal window and transformed the project into a **Web Dashboard**. By integrating a **Flask backend** with a **modern HTML/CSS frontend**, I created a system that streams AI-processed video directly to a browser, making it feel like a professional software product rather than just a script.
+As a first-year student, I wanted to build something that felt like it belonged in a sci-fi movie. I noticed that most gesture controllers are "messy" — if you try to skip a song, you accidentally change the volume too.
 
----
-
-## 🚀 The Development Journey (Roadmap)
-
-**📍 Version 1.0: The Foundation**
-*   **Built:** A basic script tracking the distance between thumb and index finger.
-*   **Features:** Basic Volume Control.
-*   **Lesson:** Learned `OpenCV` and `Pycaw`.
-*   **Problem:** High sensitivity; volume changed with every slight hand movement.
-
-**📍 Version 2.0: The Visual UI**
-*   **Built:** Added brightness control and visual HUD bars.
-*   **Features:** Real-time Volume/Brightness bars on the video feed.
-*   **Lesson:** Learned `NumPy` interpolation and drawing on frames.
-*   **Problem:** The system couldn't distinguish between Left and Right hands.
-
-**📍 Version 3.0: Adding "Intelligence"**
-*   **Built:** Introduced Hand Identification (Handedness) and Media Keys.
-*   **Features:** Left Hand (Volume), Right Hand (Brightness), Thumb Down (Minimize).
-*   **Lesson:** Integrated `PyAutoGUI` for keyboard automation.
-*   **Problem:** Gesture overlap; skipping a song would accidentally trigger volume changes.
-
-**📍 Version 4.0: The Intuitive Build**
-*   **Built:** A "Strict Mode" system using state management.
-*   **Features:** **Middle Finger Toggle**. Adjusting levels only works when the middle finger is up; Media controls only work when it's down.
-*   **Lesson:** Learned State Management and Conditional Logic. Resulted in 100% accuracy.
-
-**📍 Version 5.0: The Web Evolution (Current)**
-*   **Built:** Integrated the entire system into a **Flask Web Framework**.
-*   **Features:** Real-time video streaming to a browser-based Dashboard, Modern Dark-UI, and Shutdown controls.
-*   **Lesson:** Learned **Full-Stack basics**, MJPEG streaming, and Client-Server architecture.
+GestureFlow started as a simple pinch-to-volume script and evolved — version by version — into a full web-native spatial interaction system. **Version 6.0** adds two entirely new dimensions of interaction: a **persistent neon drawing canvas** and a **holographic globe** you can spawn in mid-air and drag across the screen with your palm. All ten gesture states are conflict-free by design.
 
 ---
 
-## ✨ Advanced Features
-*   **🌐 Web Dashboard:** Access the controller via any browser at `localhost:5000`.
-*   **🎯 Mode-Aware Adjustment:**
-    *   **Middle Finger UP:** Level Mode (Pinch to change Volume/Brightness).
-    *   **Middle Finger DOWN:** Navigation Mode (Index up for Forward/Back).
-*   **🔊 Smart Hardware Control:** Precision volume (Left) and brightness (Right) control.
-*   **⏯️ Intuitive Navigation:**
-    *   **Right Hand (1 Finger):** Forward >>
-    *   **Left Hand (1 Finger):** << Backward
-*   **🤫 Quick Actions:**
-    *   **Fist:** Mute System.
-    *   **Thumb Down:** Minimize All Windows (`Win + D`).
+## 🚀 The Development Journey (Full Roadmap)
+
+**📍 Version 1.0 — The Foundation**
+- **Built:** Basic thumb-to-index pinch distance tracking.
+- **Features:** Volume control only.
+- **Lesson:** Learned OpenCV frame capture and pycaw audio API.
+- **Problem:** High sensitivity — volume changed with every slight hand twitch.
+
+**📍 Version 2.0 — The Visual UI**
+- **Built:** Brightness control + real-time HUD bars on the video feed.
+- **Features:** Volume and brightness bars overlaid on the live frame.
+- **Lesson:** NumPy interpolation and drawing primitives on frames.
+- **Problem:** System couldn't distinguish left hand from right hand.
+
+**📍 Version 3.0 — Adding Intelligence**
+- **Built:** Hand identification (handedness) and media key injection.
+- **Features:** Left hand → Volume, Right hand → Brightness, Thumb Down → Minimize.
+- **Lesson:** Integrated pyautogui for keyboard automation.
+- **Problem:** Gesture overlap — skipping a song accidentally triggered volume changes.
+
+**📍 Version 4.0 — The Intuitive Build**
+- **Built:** A strict state machine using the middle finger as a mode toggle.
+- **Features:** Middle finger UP = Level Mode, Middle finger DOWN = Navigation Mode.
+- **Lesson:** State management and conditional gesture logic. Achieved near-100% accuracy.
+
+**📍 Version 5.0 — The Web Evolution**
+- **Built:** Entire system ported to a Flask web framework.
+- **Features:** Real-time MJPEG video streaming to a browser dashboard, modern dark UI, shutdown controls.
+- **Lesson:** Full-stack basics, MJPEG streaming, client-server architecture.
+
+**📍 Version 6.0 — Spatial Interaction (Current)**
+- **Built:** Spatial drawing canvas, geometric circle detection, holographic globe, spacebar gesture, redesigned frontend.
+- **Features:** Peace sign → draw neon strokes; draw a circle in air → spawn interactive holo-globe; index + pinky → spacebar; full UI redesign with Syne/DM Sans fonts, GSAP boot sequence, glassmorphism bento layout.
+- **Lesson:** NumPy overlay compositing, geometric shape recognition, animation timer-driven rendering, thread-safe shared state.
 
 ---
 
-## 🧠 The Technical "Brain"
-1.  **The Backend (Python/Flask):** Processes the webcam feed, runs the MediaPipe AI, and triggers system hardware commands.
-2.  **Video Streaming:** Uses a generator function to stream MJPEG frames to the HTML `<img>` tag.
-3.  **HCI Logic:** Uses the **Middle Finger** as a physical "toggle switch" to prevent gesture overlap.
-4.  **Debouncing:** A frame-based **Key Delay** prevents accidental repeated keypresses.
+## ✨ Full Feature Set (v6.0)
+
+### 🎮 Gesture State Machine — 10 States, Zero Conflicts
+
+| Gesture | Hand | Mode Condition | Action |
+| :--- | :--- | :--- | :--- |
+| **Pinch** (thumb + index) | Left | Middle finger **UP** | Volume up / down |
+| **Pinch** (thumb + index) | Right | Middle finger **UP** | Brightness up / down |
+| **Index up only** | Right | Middle finger **DOWN** | Forward → (arrow key) |
+| **Index up only** | Left | Middle finger **DOWN** | ← Backward (arrow key) |
+| **Index + Pinky up** | Either | Middle finger **DOWN** | Spacebar |
+| **Peace sign** (index + middle up) | Either | — | Enter Draw Mode |
+| **Closed fist** | Either | Any | Mute system audio |
+| **Thumb-tucked fist** | Either | Any | Win + D (show desktop) |
+| **Draw a circle** in Draw Mode | Either | In Draw Mode | Spawn Holo-Globe |
+| **Open palm near globe** | Either | Globe active | Drag globe across screen |
+
+### ✍️ Spatial Drawing Canvas
+- Trigger with the **peace sign** (index + middle up, ring + pinky down).
+- Index fingertip becomes a neon drawing cursor.
+- Strokes are painted onto a persistent NumPy overlay blended at α = 0.88 over the live video.
+- Dual-line rendering: wide dim base (10 px) + bright core (4 px) = neon glow effect.
+- Colour auto-cycles every 60 path points through five neon hues: **cyan → magenta → green → orange → violet**.
+- Lower your hand or change gesture to stop drawing. Use the "Clear Canvas" button in the UI.
+
+### 🌐 Holographic Globe
+- Trace a **rough circle** in draw mode to trigger circle detection.
+- Detection checks: ≥ 25 points, mean radius ≥ 30 px, roundness σ/μ < 0.40, closure < 1.8 × radius.
+- Globe spawns at the circle's centroid with radius scaled from your drawing.
+- While globe is active, **all other gesture processing is paused**.
+- Hold your **open palm near the globe** to drag it around the screen.
+- Globe **dissolves after 4 seconds** of no interaction — a timeout progress bar shows remaining time.
+- All gestures resume automatically after the globe disappears.
+
+### 🎨 Frontend — Redesigned in v6.0
+- **Fonts:** Syne (display) + DM Sans (body) — soft, rounded, modern.
+- **Layout:** CSS bento-grid with live video left-column, mode badge + level meters + controls stacked right.
+- **Loading screen:** GSAP-animated 5-stage neural engine boot sequence with progress bar.
+- **Live status:** JS polls `/status` every 900 ms — mode badge, volume/brightness bars, and globe pill update in real time.
+- **Gesture Atlas:** All 10 gestures documented with colour-coded cards by mode category.
+- **Features Spotlight:** Interactive CSS globe animation and SVG path draw animation for the new v6.0 features.
+
+---
+
+## 🧠 Technical Architecture
+
+```
+Webcam → OpenCV Capture → BGR→RGB → Frame Buffer
+                                          │
+                                    MediaPipe Hands
+                                    (21 landmarks × 2 hands)
+                                          │
+                                   Finger State Flags
+                                   (tip.y < PIP.y → up)
+                                          │
+                               Gesture State Machine
+                          ┌──────────┬───────────┬──────────┐
+                     Canvas       Circle      Holo-Globe    HUD
+                     Engine      Detector     Renderer    Overlay
+                          └──────────┴───────────┴──────────┘
+                                          │
+                          ┌───────────────┼───────────────┐
+                        pycaw            sbc          pyautogui
+                      (volume)      (brightness)    (keys / hotkeys)
+                                          │
+                                   Flask HTTP Server
+                          ┌───────────────┼───────────────┐
+                      /video_feed      /status       /clear_canvas
+                      (MJPEG stream)  (JSON poll)    (POST reset)
+                                          │
+                                 Browser Frontend
+                          ┌───────────────┼───────────────┐
+                      <img> stream    JS 900ms poll   GSAP UI
+```
+
+### Key Technical Decisions
+1. **Priority-ordered state machine** — Globe intercepts first, then Draw, then Standard gestures. The `continue` statement in globe mode hard-skips all other evaluation.
+2. **Peace sign for draw** — Index + middle UP is geometrically distinct from navigation (index UP + middle strictly DOWN). No overlap possible.
+3. **Thread-safe canvas** — A `threading.Lock` protects the NumPy canvas array accessed by both the frame generator and the `/clear_canvas` route.
+4. **Debounce via key_delay** — A frame counter (15 frames for nav/space, 30 for Win+D) prevents a sustained gesture from firing hundreds of key events.
+5. **Neon glow without shaders** — Two overlapping `cv2.line` calls (wide + dim, narrow + bright) simulate a luminous stroke on CPU.
 
 ---
 
 ## 🛠️ Setup & Installation
+
 ```bash
-# Install all the "organs" of the project
-python -m pip install flask opencv-python mediapipe numpy pycaw screen-brightness-control pyautogui
+pip install flask opencv-python mediapipe numpy pycaw screen-brightness-control pyautogui
 ```
-  
-### Project Structure:
-```text
-GestureFlowWeb/
-├── app.py              (Backend)
+
+### Project Structure
+
+```
+GestureFlow/
+├── app.py
 └── templates/
-    └── index.html      (Frontend)
+    └── index.html
 ```
 
-### 🚀 How to Run
+### Run
 
-#### To run the Terminal Version (v4.0):
-1. `cd v4_Terminal_Version`
-2. `python main.py`
+```bash
+python app.py
+```
 
-#### To run the Web Dashboard (v5.0):
-1. `cd v5_Web_Dashboard`
-2. `python app.py`
-3. Open `http://127.0.0.1:5000` in your browser.
+Open **http://127.0.0.1:5000** in your browser.
 
----
-
-## 🎮 The Gesture Cheat-Sheet
-| Gesture | Hand | Mode (Middle Finger) | Action |
-| :--- | :--- | :--- | :--- |
-| **Pinch** | Left | **UP** | Volume Up/Down |
-| **Pinch** | Right | **UP** | Brightness Up/Down |
-| **Index Up** | Right | **DOWN** | Forward >> |
-| **Index Up** | Left | **DOWN** | << Backward |
-| **Fist** | Any | Any | **MUTE** |
-| **Thumb Down**| Any | **DOWN** | Minimize All |
+> **Requirements:** Python 3.8+, Windows (pycaw is Windows-only), webcam, well-lit environment.
 
 ---
 
-## 👨‍💻 About Me
-I am **Saiyam Bajpai**, a student at the intersection of Design and Data Science. I am currently pursuing my B.Tech in **Computer Science & Design** at **MITS Gwalior** and a BS in **Data Science** at **IIT Madras**. 
+## 🎮 Quick Gesture Reference
 
-This project taught me that coding isn't just about syntax—it's about building bridges between human intent and machine execution.
+```
+LEVEL MODE  (middle finger UP)
+  Left hand  pinch  →  Volume
+  Right hand pinch  →  Brightness
 
-**Let's Connect!**
-*   **Focus:** Mastering Python, Computer Vision, and Full-Stack Development.
-*   **Goal:** To build AI tools that make technology feel invisible and natural.
+NAVIGATION  (middle finger DOWN)
+  Right index only   →  Forward →
+  Left  index only   →  ← Backward
+  Index + Pinky      →  [ Spacebar ]
+
+SYSTEM
+  Closed fist        →  Mute
+  Thumb-tucked fist  →  Win + D
+
+DRAW MODE  (peace sign: index + middle UP, ring + pinky DOWN)
+  Move index tip     →  Paint neon stroke
+  Draw a circle      →  Spawn Holo-Globe
+
+GLOBE MODE  (auto-activates on circle detection)
+  Palm near globe    →  Drag globe
+  No touch 4 sec     →  Globe dissolves, gestures resume
+```
 
 ---
 
-### ⭐ "If you can imagine it, you can code it."
-*Building this roadmap taught me more about logic than any textbook ever could.*
+## 👨‍💻 About
+
+**Saiyam Bajpai** — B.Tech in Computer Science & Design @ MITS Gwalior | BS in Data Science @ IIT Madras.
+
+This project taught me that great HCI is about removing friction between human intent and machine response — and that the best interface is the one you already have: your hands.
+
+[![GitHub](https://img.shields.io/badge/GitHub-saiyam--bajpai-black?style=flat-square&logo=github)](https://github.com/saiyam-bajpai/Computer-Vision-based-Hand-Gesture-Control)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-saiyam--bajpai-blue?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/saiyam-bajpai/)
+
+---
+
+> *"The best interface is no interface — but until then, your hands will do."*
